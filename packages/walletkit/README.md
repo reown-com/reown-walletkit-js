@@ -1,4 +1,4 @@
-# @reown-com/walletkit
+# @reown/walletkit
 
 ## Description
 
@@ -9,7 +9,7 @@ The WalletKit SDK streamlines the integration process, making it easier for wall
 ### Install
 
 ```
-npm install @reown-com/walletkit
+npm install @reown/walletkit
 ```
 
 ### Wallet Usage
@@ -18,7 +18,7 @@ npm install @reown-com/walletkit
 
 ```javascript
 import { Core } from "@walletconnect/core";
-import { WalletKit } from "@reown-com/walletkit";
+import { WalletKit } from "@reown/walletkit";
 
 const core = new Core({
   projectId: process.env.PROJECT_ID,
