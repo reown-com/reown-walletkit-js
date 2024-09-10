@@ -1,0 +1,67 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+lerna-debug.log
+*.lerna_backup
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+# Dependency directories
+**/node_modules
+jspm_packages
+# Optional npm cache directory
+.npm
+.eslintcache
+.node_repl_history
+*.tgz
+**/dist
+**/build
+.DS_Store
+.makeFlags*
+.env
+zip
+.idea
+.rts2_cache_*
+.nyc_output
+tsconfig.tsbuildinfo
+test.db
+test.db-journal
+**/tmp
+setup
+result*
+ops/grafana/grafana.ini
+.rollup.cache
+
+# react native module
+## Android/IJ
+.classpath
+.cxx
+.gradle
+.idea
+.project
+.settings
+local.properties
+android.iml
+
+## Xcode
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+project.xcworkspace

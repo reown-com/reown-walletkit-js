@@ -1,0 +1,75 @@
+{
+  "name": "reown-js",
+  "description": "Monorepo for reown",
+  "private": true,
+  "keywords": [
+    "wallet",
+    "walletconnect",
+    "ethereum",
+    "jsonrpc",
+    "mobile",
+    "qrcode",
+    "web3",
+    "crypto",
+    "cryptocurrency",
+    "dapp",
+    "reown",
+    "walletkit"
+  ],
+  "author": "Reown, Inc.",
+  "homepage": "https://github.com/reown-com/",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "packages/walletkit"
+  ],
+  "scripts": {
+    "clean": "npm run clean --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "prettier": "npm run prettier --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:ignoreUnhandled": "npm run test:ignoreUnhandled --workspaces --if-present",
+    "check": "npm run lint; npm run build; npm run test",
+    "reset": "npm run clean; npm run check",
+    "new-version": "lerna version --no-private --no-git-tag-version --exact",
+    "pre-publish": "npm run new-version; npm run reset",
+    "npm-publish:rc": "lerna exec --no-private -- npm publish --access public --tag rc",
+    "npm-publish:latest": "lerna exec --no-private -- npm publish --access public --tag latest",
+    "npm-publish:next": "lerna exec --no-private -- npm publish --access public --tag next",
+    "npm-publish:canary": "lerna exec --no-private -- npm publish --access public --tag canary"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reown-com.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reown-com/issues"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "22.0.2",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "13.3.0",
+    "@types/node": "18.7.3",
+    "@types/sinon": "10.0.13",
+    "@typescript-eslint/eslint-plugin": "5.33.0",
+    "@typescript-eslint/parser": "5.33.0",
+    "esbuild": "0.17.19",
+    "eslint": "8.22.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-config-standard": "17.0.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-n": "15.7.0",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-promise": "6.0.0",
+    "eslint-plugin-react": "7.30.1",
+    "eslint-plugin-standard": "5.0.0",
+    "lerna": "7.1.4",
+    "prettier": "2.7.1",
+    "rollup": "2.78.0",
+    "rollup-plugin-esbuild": "4.9.3",
+    "sinon": "14.0.0",
+    "typescript": "4.7.4",
+    "vitest": "0.22.1"
+  }
+}
