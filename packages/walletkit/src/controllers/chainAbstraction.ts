@@ -1,29 +1,68 @@
+/* eslint-disable no-console */
 import { ENV_MAP, getEnvironment } from "@walletconnect/utils";
-import { IChainAbstraction } from "../types";
+import { ChainAbstractionTypes, IChainAbstraction, IWalletKitEngine } from "../types";
+import { FULFILMENT_STATUS, CAN_FULFIL_STATUS } from "../constants";
 
 export class ChainAbstraction extends IChainAbstraction {
   private canFulfilHandler: any;
   private fulfilmentStatusHandler: any;
+  private projectId: string;
 
-  constructor() {
-    super();
+  constructor(public engine: IWalletKitEngine) {
+    super(engine);
     this.loadHandlers();
+    this.projectId = this.engine.client.core.projectId || "";
   }
 
-  public canFulfil = async (params: { transaction: any }) => {
+  public canFulfil: IChainAbstraction["canFulfil"] = async (params) => {
     console.log("canFulfil", params);
     if (!this.canFulfilHandler) {
       throw new Error(`canFulfilHandler not found for environment: '${getEnvironment()}'`);
     }
-    return await this.canFulfilHandler(params);
+
+    const { transaction } = params;
+
+    const result = (await this.canFulfilHandler({
+      transaction,
+      projectId: this.projectId,
+    })) as ChainAbstractionTypes.CanFulfilHandlerResult;
+    console.log("canFulfil processing result..", result.status);
+    switch (result.status) {
+      case CAN_FULFIL_STATUS.error:
+        throw new Error(result.reason);
+      case CAN_FULFIL_STATUS.not_required:
+        return { status: CAN_FULFIL_STATUS.not_required };
+      case CAN_FULFIL_STATUS.available:
+        return {
+          status: CAN_FULFIL_STATUS.available,
+          data: {
+            fulfilmentId: result.data.orchestrationId,
+            checkIn: result.data.checkIn,
+            transactions: result.data.transactions,
+            funding: result.data.metadata.fundingFrom,
+          },
+        };
+    }
   };
 
-  public fulfilmentStatus = async (params: { fulfilmentId: string }) => {
+  public fulfilmentStatus: IChainAbstraction["fulfilmentStatus"] = async (params) => {
     if (!this.fulfilmentStatusHandler) {
       throw new Error(`fulfilmentStatusHandler not found for environment: '${getEnvironment()}'`);
     }
+
+    const { fulfilmentId } = params;
+
     console.log("fulfilmentStatus", params);
-    return await Promise.resolve(true);
+    const result = (await this.fulfilmentStatusHandler({
+      orchestrationId: fulfilmentId,
+      projectId: this.projectId,
+    })) as ChainAbstractionTypes.FulfilmentStatusHandlerResponse;
+
+    if (result.status === FULFILMENT_STATUS.error) {
+      throw new Error(result.reason);
+    }
+    console.log("fulfilmentStatus result", result);
+    return result;
   };
 
   private loadHandlers = () => {
@@ -44,8 +83,8 @@ export class ChainAbstraction extends IChainAbstraction {
       console.warn("React Native Yttrium not found in global scope");
       return;
     }
-    this.canFulfilHandler = yttrium.canFulfil;
-    this.fulfilmentStatusHandler = yttrium.fulfilmentStatus;
+    this.canFulfilHandler = yttrium.route;
+    this.fulfilmentStatusHandler = yttrium.status;
   };
 
   private Browser = () => {
@@ -53,6 +92,11 @@ export class ChainAbstraction extends IChainAbstraction {
   };
 
   private Node = () => {
-    console.warn("Yttrium not available in node environment");
+    const yttrium = (global as any)?.yttrium;
+    if (!yttrium) {
+      console.warn("Yttrium not available in node environment");
+    }
+    this.canFulfilHandler = yttrium.route;
+    this.fulfilmentStatusHandler = yttrium.status;
   };
 }

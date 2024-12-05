@@ -11,7 +11,7 @@ export class Engine extends IWalletKitEngine {
     super(client);
     // initialized in init()
     this.signClient = {} as any;
-    this.chainAbstraction = new ChainAbstraction();
+    this.chainAbstraction = new ChainAbstraction(this);
   }
 
   public init = async () => {

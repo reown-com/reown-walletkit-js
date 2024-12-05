@@ -12,7 +12,13 @@ import { toMiliseconds } from "@walletconnect/time";
 import { Wallet as CryptoWallet } from "@ethersproject/wallet";
 
 import { expect, describe, it, beforeEach, vi, beforeAll, afterEach } from "vitest";
-import { WalletKit, IWalletKit } from "../src";
+import {
+  WalletKit,
+  IWalletKit,
+  ChainAbstractionTypes,
+  FULFILMENT_STATUS,
+  CAN_FULFIL_STATUS,
+} from "../src";
 import {
   disconnect,
   TEST_CORE_OPTIONS,
@@ -21,6 +27,57 @@ import {
   TEST_REQUIRED_NAMESPACES,
   TEST_UPDATED_NAMESPACES,
 } from "./shared";
+
+let routeResponse = {
+  status: CAN_FULFIL_STATUS.available,
+  data: {
+    transactions: [
+      {
+        to: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
+        from: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
+        value: "0x",
+        chainId: "eip155:1",
+      },
+    ],
+    metadata: {
+      fundingFrom: [
+        {
+          tokenContract: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
+          amount: "0x",
+          chainId: "eip155:1",
+          symbol: "ETH",
+        },
+      ],
+    },
+    orchestratorId: "1234",
+    checkIn: 3000,
+  },
+};
+
+let statusResponse = {
+  status: FULFILMENT_STATUS.pending,
+  createdAt: new Date().getTime(),
+  checkIn: 300,
+};
+
+const setRouteResponse = (response: any) => {
+  routeResponse = response;
+};
+
+const setStatusResponse = (response: any) => {
+  statusResponse = response;
+};
+
+global.yttrium = {
+  status: (params) => {
+    console.log("status", params);
+    return Promise.resolve(statusResponse);
+  },
+  route: (params) => {
+    console.log("route", params);
+    return Promise.resolve(routeResponse);
+  },
+};
 
 describe("Chain Abstraction", () => {
   let core: ICore;
@@ -64,23 +121,25 @@ describe("Chain Abstraction", () => {
   });
 
   it("should reject canFulfil in node", async () => {
-    await wallet
-      .canFulfil({
-        transaction: { to: "0x1234", from: "12", value: "12", chainId: "1" },
-      })
-      .catch((error) => {
-        expect(error).to.be.exist;
-        expect(error.message).to.be.eq(`canFulfilHandler not found for environment: 'node'`);
-      });
+    await wallet.canFulfil({
+      transaction: {
+        to: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
+        from: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
+        value: "0x",
+        chainId: "eip155:1",
+      },
+    });
   });
-  it("should reject fulfilmentStatus in node", async () => {
-    await wallet
-      .fulfilmentStatus({
-        fulfilmentId: "1234",
-      })
-      .catch((error) => {
-        expect(error).to.be.exist;
-        expect(error.message).to.be.eq(`fulfilmentStatusHandler not found for environment: 'node'`);
-      });
+  it("should get fulfilmentStatus", async () => {
+    const result = await wallet.fulfilmentStatus({
+      fulfilmentId: "1234",
+    });
+
+    expect(result).to.be.exist;
+    expect(result.status).to.be.eq(FULFILMENT_STATUS.pending);
+    expect(result.createdAt).to.be.exist;
+    if (result.status === FULFILMENT_STATUS.pending) {
+      expect(result.checkIn).to.be.a("number");
+    }
   });
 });
