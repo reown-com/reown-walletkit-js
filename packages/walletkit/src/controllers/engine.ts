@@ -1,14 +1,17 @@
 import { SignClient } from "@walletconnect/sign-client";
 import { ISignClient, SessionTypes } from "@walletconnect/types";
 import { IWalletKitEngine, WalletKitTypes } from "../types";
+import { ChainAbstraction } from "./chainAbstraction";
 
 export class Engine extends IWalletKitEngine {
   public signClient: ISignClient;
+  public chainAbstraction: ChainAbstraction;
 
   constructor(client: IWalletKitEngine["client"]) {
     super(client);
     // initialized in init()
     this.signClient = {} as any;
+    this.chainAbstraction = new ChainAbstraction();
   }
 
   public init = async () => {
@@ -122,6 +125,14 @@ export class Engine extends IWalletKitEngine {
     return this.client.events.removeListener(name, listener);
   };
 
+  // Chain Abstraction //
+  public canFulfil: IWalletKitEngine["canFulfil"] = async (params) => {
+    return await this.chainAbstraction.canFulfil(params);
+  };
+
+  public fulfilmentStatus: IWalletKitEngine["fulfilmentStatus"] = async (params) => {
+    return await this.chainAbstraction.fulfilmentStatus(params);
+  };
   // ---------- Private ----------------------------------------------- //
 
   private onSessionRequest = (event: WalletKitTypes.SessionRequest) => {

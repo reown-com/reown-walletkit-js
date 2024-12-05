@@ -186,6 +186,24 @@ export class WalletKit extends IWalletKit {
     }
   };
 
+  public canFulfil: IWalletKit["canFulfil"] = async (params) => {
+    try {
+      return await this.engine.canFulfil(params);
+    } catch (error: any) {
+      this.logger.error(error.message);
+      throw error;
+    }
+  };
+
+  public fulfilmentStatus: IWalletKit["fulfilmentStatus"] = async (params) => {
+    try {
+      return await this.engine.fulfilmentStatus(params);
+    } catch (error: any) {
+      this.logger.error(error.message);
+      throw error;
+    }
+  };
+
   // ---------- Private ----------------------------------------------- //
 
   private async initialize() {
