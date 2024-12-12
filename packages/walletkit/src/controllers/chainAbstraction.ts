@@ -26,10 +26,10 @@ export class ChainAbstraction extends IChainAbstraction {
       transaction,
       projectId: this.projectId,
     })) as ChainAbstractionTypes.CanFulfilHandlerResult;
-    console.log("canFulfil processing result..", result.status);
+    console.log("canFulfil processing result..", result);
     switch (result.status) {
       case CAN_FULFIL_STATUS.error:
-        throw new Error(result.reason);
+        return { status: CAN_FULFIL_STATUS.error, reason: result.reason };
       case CAN_FULFIL_STATUS.not_required:
         return { status: CAN_FULFIL_STATUS.not_required };
       case CAN_FULFIL_STATUS.available:
@@ -42,6 +42,8 @@ export class ChainAbstraction extends IChainAbstraction {
             funding: result.data.metadata.fundingFrom,
           },
         };
+      default:
+        throw new Error(`Invalid canFulfil status: ${JSON.stringify(result)}`);
     }
   };
 
@@ -83,8 +85,8 @@ export class ChainAbstraction extends IChainAbstraction {
       console.warn("React Native Yttrium not found in global scope");
       return;
     }
-    this.canFulfilHandler = yttrium.route;
-    this.fulfilmentStatusHandler = yttrium.status;
+    this.canFulfilHandler = yttrium.checkRoute;
+    this.fulfilmentStatusHandler = yttrium.checkStatus;
   };
 
   private Browser = () => {
@@ -96,7 +98,7 @@ export class ChainAbstraction extends IChainAbstraction {
     if (!yttrium) {
       console.warn("Yttrium not available in node environment");
     }
-    this.canFulfilHandler = yttrium.route;
-    this.fulfilmentStatusHandler = yttrium.status;
+    this.canFulfilHandler = yttrium.checkRoute;
+    this.fulfilmentStatusHandler = yttrium.checkStatus;
   };
 }

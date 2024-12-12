@@ -45,6 +45,10 @@ export declare namespace ChainAbstractionTypes {
           transactions: ChainAbstractionTypes.Transaction[];
           funding: FundingFrom[];
         };
+      }
+    | {
+        status: "error";
+        reason: string;
       };
 
   type FundingFrom = {

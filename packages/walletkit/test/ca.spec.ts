@@ -69,11 +69,11 @@ const setStatusResponse = (response: any) => {
 };
 
 global.yttrium = {
-  status: (params) => {
+  checkStatus: (params) => {
     console.log("status", params);
     return Promise.resolve(statusResponse);
   },
-  route: (params) => {
+  checkRoute: (params) => {
     console.log("route", params);
     return Promise.resolve(routeResponse);
   },
