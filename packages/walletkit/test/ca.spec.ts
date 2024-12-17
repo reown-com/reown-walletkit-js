@@ -31,26 +31,31 @@ import {
 let routeResponse = {
   status: CAN_FULFIL_STATUS.available,
   data: {
-    transactions: [
-      {
-        to: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
-        from: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
-        value: "0x",
-        chainId: "eip155:1",
-      },
-    ],
-    metadata: {
-      fundingFrom: [
+    routes: {
+      transactions: [
         {
-          tokenContract: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
-          amount: "0x",
+          to: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
+          from: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
+          value: "0x",
           chainId: "eip155:1",
-          symbol: "ETH",
         },
       ],
+      metadata: {
+        fundingFrom: [
+          {
+            tokenContract: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
+            amount: "0x",
+            chainId: "eip155:1",
+            symbol: "ETH",
+          },
+        ],
+      },
+      orchestratorId: "1234",
+      checkIn: 3000,
     },
-    orchestratorId: "1234",
-    checkIn: 3000,
+    routesDetails: {
+      localTotal: {},
+    },
   },
 };
 

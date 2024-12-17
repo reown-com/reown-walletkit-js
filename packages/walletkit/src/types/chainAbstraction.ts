@@ -40,10 +40,22 @@ export declare namespace ChainAbstractionTypes {
     | {
         status: "available";
         data: {
-          fulfilmentId: string;
-          checkIn: number;
-          transactions: ChainAbstractionTypes.Transaction[];
-          funding: FundingFrom[];
+          routes: {
+            fulfilmentId: string;
+            checkIn: number;
+            transactions: ChainAbstractionTypes.Transaction[];
+            funding: FundingFrom[];
+            initialTransaction: ChainAbstractionTypes.Transaction;
+          };
+          routesDetails: {
+            totalFees: {
+              amount: string;
+              formatted: string;
+              formattedAlt: string;
+              symbol: string;
+              unit: number;
+            };
+          };
         };
       }
     | {
@@ -69,12 +81,24 @@ export declare namespace ChainAbstractionTypes {
     | {
         status: "available";
         data: {
-          orchestrationId: string;
-          checkIn: number;
-          metadata: {
-            fundingFrom: FundingFrom[];
+          routes: {
+            orchestrationId: string;
+            checkIn: number;
+            metadata: {
+              fundingFrom: FundingFrom[];
+            };
+            transactions: ChainAbstractionTypes.Transaction[];
+            initialTransaction: ChainAbstractionTypes.Transaction;
           };
-          transactions: ChainAbstractionTypes.Transaction[];
+          routesDetails: {
+            localTotal: {
+              amount: string;
+              formatted: string;
+              formattedAlt: string;
+              symbol: string;
+              unit: number;
+            };
+          };
         };
       };
 }

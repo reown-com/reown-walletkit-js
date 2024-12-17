@@ -33,13 +33,23 @@ export class ChainAbstraction extends IChainAbstraction {
       case CAN_FULFIL_STATUS.not_required:
         return { status: CAN_FULFIL_STATUS.not_required };
       case CAN_FULFIL_STATUS.available:
+        // eslint-disable-next-line no-case-declarations
+        const routes = result.data.routes;
+        // eslint-disable-next-line no-case-declarations
+        const routesDetails = result.data.routesDetails;
         return {
           status: CAN_FULFIL_STATUS.available,
           data: {
-            fulfilmentId: result.data.orchestrationId,
-            checkIn: result.data.checkIn,
-            transactions: result.data.transactions,
-            funding: result.data.metadata.fundingFrom,
+            routes: {
+              fulfilmentId: routes.orchestrationId,
+              checkIn: routes.checkIn,
+              transactions: routes.transactions,
+              funding: routes.metadata.fundingFrom,
+              initialTransaction: routes.initialTransaction,
+            },
+            routesDetails: {
+              totalFees: routesDetails.localTotal,
+            },
           },
         };
       default:
