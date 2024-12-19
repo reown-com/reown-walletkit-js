@@ -126,13 +126,26 @@ export class Engine extends IWalletKitEngine {
   };
 
   // Chain Abstraction //
-  public canFulfil: IWalletKitEngine["canFulfil"] = async (params) => {
-    return await this.chainAbstraction.canFulfil(params);
+  public prepareFulfilment: IWalletKitEngine["prepareFulfilment"] = async (params) => {
+    return await this.chainAbstraction.prepareFulfilment(params);
   };
 
   public fulfilmentStatus: IWalletKitEngine["fulfilmentStatus"] = async (params) => {
     return await this.chainAbstraction.fulfilmentStatus(params);
   };
+
+  public estimateFees: IWalletKitEngine["estimateFees"] = async (params) => {
+    return await this.chainAbstraction.estimateFees(params);
+  };
+
+  public getERC20Balance: IWalletKitEngine["getERC20Balance"] = async (params) => {
+    return await this.chainAbstraction.getERC20Balance(params);
+  };
+
+  public getFulfilmentDetails: IWalletKitEngine["getFulfilmentDetails"] = async (params) => {
+    return await this.chainAbstraction.getFulfilmentDetails(params);
+  };
+
   // ---------- Private ----------------------------------------------- //
 
   private onSessionRequest = (event: WalletKitTypes.SessionRequest) => {

@@ -130,8 +130,11 @@ export abstract class IWalletKit {
   public abstract rejectSessionAuthenticate: IWalletKitEngine["rejectSessionAuthenticate"];
 
   // chain abstraction //
-  public abstract canFulfil: IWalletKitEngine["canFulfil"];
+  public abstract prepareFulfilment: IWalletKitEngine["prepareFulfilment"];
   public abstract fulfilmentStatus: IWalletKitEngine["fulfilmentStatus"];
+  public abstract estimateFees: IWalletKitEngine["estimateFees"];
+  public abstract getERC20Balance: IWalletKitEngine["getERC20Balance"];
+  public abstract getFulfilmentDetails: IWalletKitEngine["getFulfilmentDetails"];
 
   // ---------- Event Handlers ----------------------------------------------- //
   public abstract on: <E extends WalletKitTypes.Event>(

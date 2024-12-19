@@ -1,17 +1,31 @@
 import { IWalletKitEngine } from "./engine";
 
 export declare namespace ChainAbstractionTypes {
+  type InitialTransaction = {
+    from: string;
+    to: string;
+    data: string;
+    chainId: string;
+  };
+
   type Transaction = {
     from: string;
     to: string;
     value: string;
     chainId: string;
-    gas?: string;
-    gasPrice?: string;
-    data?: string;
-    nonce?: string;
-    maxFeePerGas?: string;
-    maxPriorityFeePerGas?: string;
+    gasLimit: string;
+    input: string;
+    nonce: string;
+    maxFeePerGas: string;
+    maxPriorityFeePerGas: string;
+  };
+
+  type InitialTransactionMetadata = {
+    symbol: string;
+    amount: string;
+    decimals: number;
+    tokenContract: string;
+    transferTo: string;
   };
 
   type FulfilmentStatusResponse = {
@@ -33,29 +47,19 @@ export declare namespace ChainAbstractionTypes {
     | { status: "error"; reason: string }
   );
 
-  type CanFulfilResponse =
+  type PrepareFulfilmentResponse =
     | {
         status: "not_required";
       }
     | {
         status: "available";
         data: {
-          routes: {
-            fulfilmentId: string;
-            checkIn: number;
-            transactions: ChainAbstractionTypes.Transaction[];
-            funding: FundingFrom[];
-            initialTransaction: ChainAbstractionTypes.Transaction;
-          };
-          routesDetails: {
-            totalFees: {
-              amount: string;
-              formatted: string;
-              formattedAlt: string;
-              symbol: string;
-              unit: number;
-            };
-          };
+          fulfilmentId: string;
+          checkIn: number;
+          transactions: Transaction[];
+          funding: FundingFrom[];
+          initialTransaction: Transaction;
+          initialTransactionMetadata: InitialTransactionMetadata;
         };
       }
     | {
@@ -70,7 +74,7 @@ export declare namespace ChainAbstractionTypes {
     symbol: string;
   };
 
-  type CanFulfilHandlerResult =
+  type PrepareFulfilmentHandlerResult =
     | {
         status: "error";
         reason: string;
@@ -81,35 +85,74 @@ export declare namespace ChainAbstractionTypes {
     | {
         status: "available";
         data: {
-          routes: {
-            orchestrationId: string;
-            checkIn: number;
-            metadata: {
-              fundingFrom: FundingFrom[];
-            };
-            transactions: ChainAbstractionTypes.Transaction[];
-            initialTransaction: ChainAbstractionTypes.Transaction;
+          orchestrationId: string;
+          checkIn: number;
+          metadata: {
+            fundingFrom: FundingFrom[];
+            initialTransaction: InitialTransactionMetadata;
           };
-          routesDetails: {
-            localTotal: {
-              amount: string;
-              formatted: string;
-              formattedAlt: string;
-              symbol: string;
-              unit: number;
-            };
-          };
+          transactions: Transaction[];
+          initialTransaction: Transaction;
         };
       };
+
+  type EstimateFeesResponse = {
+    maxFeePerGas: string;
+    maxPriorityFeePerGas: string;
+  };
+
+  type ERC20BalanceResponse = {
+    balance: string;
+  };
+
+  type TotalFee = {
+    symbol: string;
+    amount: string;
+    unit: number;
+    formatted: string;
+    formattedAlt: string;
+  };
+
+  type TransactionFee = {
+    fee: TotalFee;
+    localFee: TotalFee;
+  };
+
+  type TransactionDetails = {
+    transaction: Transaction;
+    eip1559: EstimateFeesResponse;
+    transactionFee: TransactionFee;
+  };
+
+  type FulfilmentDetailsResponse = {
+    routeDetails: TransactionDetails[];
+    initialTransactionDetails: TransactionDetails;
+    bridgeDetails: TransactionFee[];
+    totalFee: TotalFee;
+  };
 }
 export abstract class IChainAbstraction {
   constructor(public engine: IWalletKitEngine) {}
 
-  public abstract canFulfil(params: {
-    transaction: ChainAbstractionTypes.Transaction;
-  }): Promise<ChainAbstractionTypes.CanFulfilResponse>;
+  public abstract prepareFulfilment(params: {
+    transaction: ChainAbstractionTypes.InitialTransaction;
+  }): Promise<ChainAbstractionTypes.PrepareFulfilmentResponse>;
 
   public abstract fulfilmentStatus(params: {
     fulfilmentId: string;
   }): Promise<ChainAbstractionTypes.FulfilmentStatusResponse>;
+
+  public abstract estimateFees(params: {
+    chainId: string;
+  }): Promise<ChainAbstractionTypes.EstimateFeesResponse>;
+
+  public abstract getERC20Balance(params: {
+    chainId: string;
+    tokenAddress: string;
+    ownerAddress: string;
+  }): Promise<ChainAbstractionTypes.ERC20BalanceResponse>;
+
+  public abstract getFulfilmentDetails(params: {
+    fulfilmentId: string;
+  }): Promise<ChainAbstractionTypes.FulfilmentDetailsResponse>;
 }
