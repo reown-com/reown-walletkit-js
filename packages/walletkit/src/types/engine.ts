@@ -8,10 +8,12 @@ import {
   AuthTypes,
 } from "@walletconnect/types";
 import { IWalletKit, WalletKitTypes } from "./client";
+import { IChainAbstraction } from "./chainAbstraction";
 import EventEmitter from "events";
 
 export abstract class IWalletKitEngine {
   public abstract signClient: ISignClient;
+  public abstract chainAbstraction: IChainAbstraction;
 
   constructor(public client: IWalletKit) {}
   // ---------- Public Methods ------------------------------------------------- //
@@ -95,6 +97,18 @@ export abstract class IWalletKitEngine {
   public abstract registerDeviceToken(
     params: EchoClientTypes.RegisterDeviceTokenParams,
   ): Promise<void>;
+
+  // ---------- Chain Abstraction ------------------------------------ //
+
+  public abstract prepareFulfilment: IChainAbstraction["prepareFulfilment"];
+
+  public abstract fulfilmentStatus: IChainAbstraction["fulfilmentStatus"];
+
+  public abstract estimateFees: IChainAbstraction["estimateFees"];
+
+  public abstract getERC20Balance: IChainAbstraction["getERC20Balance"];
+
+  public abstract getFulfilmentDetails: IChainAbstraction["getFulfilmentDetails"];
 
   // ---------- Event Handlers ----------------------------------------------- //
   public abstract on: <E extends WalletKitTypes.Event>(

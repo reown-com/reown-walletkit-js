@@ -1,14 +1,17 @@
 import { SignClient } from "@walletconnect/sign-client";
 import { ISignClient, SessionTypes } from "@walletconnect/types";
 import { IWalletKitEngine, WalletKitTypes } from "../types";
+import { ChainAbstraction } from "./chainAbstraction";
 
 export class Engine extends IWalletKitEngine {
   public signClient: ISignClient;
+  public chainAbstraction: ChainAbstraction;
 
   constructor(client: IWalletKitEngine["client"]) {
     super(client);
     // initialized in init()
     this.signClient = {} as any;
+    this.chainAbstraction = new ChainAbstraction(this);
   }
 
   public init = async () => {
@@ -120,6 +123,27 @@ export class Engine extends IWalletKitEngine {
   public removeListener: IWalletKitEngine["removeListener"] = (name, listener) => {
     this.setEvent(name, "removeListener");
     return this.client.events.removeListener(name, listener);
+  };
+
+  // Chain Abstraction //
+  public prepareFulfilment: IWalletKitEngine["prepareFulfilment"] = async (params) => {
+    return await this.chainAbstraction.prepareFulfilment(params);
+  };
+
+  public fulfilmentStatus: IWalletKitEngine["fulfilmentStatus"] = async (params) => {
+    return await this.chainAbstraction.fulfilmentStatus(params);
+  };
+
+  public estimateFees: IWalletKitEngine["estimateFees"] = async (params) => {
+    return await this.chainAbstraction.estimateFees(params);
+  };
+
+  public getERC20Balance: IWalletKitEngine["getERC20Balance"] = async (params) => {
+    return await this.chainAbstraction.getERC20Balance(params);
+  };
+
+  public getFulfilmentDetails: IWalletKitEngine["getFulfilmentDetails"] = async (params) => {
+    return await this.chainAbstraction.getFulfilmentDetails(params);
   };
 
   // ---------- Private ----------------------------------------------- //
