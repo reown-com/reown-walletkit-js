@@ -186,6 +186,8 @@ export class WalletKit extends IWalletKit {
     }
   };
 
+  // ---------- Chain Abstraction ----------------------------------------------- //
+
   public prepareFulfilment: IWalletKit["prepareFulfilment"] = async (params) => {
     try {
       return await this.engine.prepareFulfilment(params);

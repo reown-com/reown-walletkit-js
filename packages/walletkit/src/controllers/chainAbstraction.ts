@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { ENV_MAP, getEnvironment } from "@walletconnect/utils";
+import { THIRTY_SECONDS, toMiliseconds } from "@walletconnect/time";
 import { ChainAbstractionTypes, IChainAbstraction, IWalletKitEngine } from "../types";
 import { FULFILMENT_STATUS, CAN_FULFIL_STATUS } from "../constants";
 
@@ -9,6 +10,7 @@ export class ChainAbstraction extends IChainAbstraction {
   private estimateFeesHandler: any;
   private getERC20BalanceHandler: any;
   private getFulfilmentDetailsHandler: any;
+  private statusPollingTimeout = THIRTY_SECONDS;
 
   private projectId: string;
 
@@ -62,16 +64,35 @@ export class ChainAbstraction extends IChainAbstraction {
 
     const { fulfilmentId } = params;
 
-    console.log("fulfilmentStatus", params);
-    const result = (await this.fulfilmentStatusHandler({
-      orchestrationId: fulfilmentId,
-      projectId: this.projectId,
-    })) as ChainAbstractionTypes.FulfilmentStatusHandlerResponse;
+    const timeout = setTimeout(() => {
+      throw new Error(`Fulfilment status polling timeout: ${fulfilmentId}`);
+    }, toMiliseconds(this.statusPollingTimeout));
 
-    if (result.status === FULFILMENT_STATUS.error) {
-      throw new Error(result.reason);
-    }
-    console.log("fulfilmentStatus result", result);
+    let result;
+
+    do {
+      const statusResult = (await this.fulfilmentStatusHandler({
+        orchestrationId: fulfilmentId,
+        projectId: this.projectId,
+      })) as ChainAbstractionTypes.FulfilmentStatusHandlerResponse;
+
+      console.log("fulfilmentStatus result", statusResult);
+
+      if (statusResult.status === FULFILMENT_STATUS.pending) {
+        console.log("fulfilmentStatus pending retrying...", statusResult);
+        await new Promise((resolve) => setTimeout(resolve, statusResult.checkIn));
+        continue;
+      }
+
+      if (statusResult.status === FULFILMENT_STATUS.error) {
+        clearTimeout(timeout);
+        throw new Error(statusResult.reason);
+      }
+
+      clearTimeout(timeout);
+      result = statusResult;
+    } while (!result);
+
     return result;
   };
 
