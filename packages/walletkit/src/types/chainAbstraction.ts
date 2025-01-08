@@ -30,12 +30,8 @@ export declare namespace ChainAbstractionTypes {
 
   type FulfilmentStatusResponse = {
     createdAt: number;
-  } & (
-    | {
-        status: "completed";
-      }
-    | { status: "pending"; checkIn: number }
-  );
+    status: "completed";
+  };
 
   type FulfilmentStatusHandlerResponse = {
     createdAt: number;
