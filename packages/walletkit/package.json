@@ -28,7 +28,7 @@
     "build": "npm run build:pre; npm run build:source; npm run build:types",
     "test": "vitest run --dir test --no-threads",
     "lint": "eslint -c '../../.eslintrc' --fix './src/**/*.ts'",
-    "prettier": "prettier --check '{src,test}/**/*.{js,ts,jsx,tsx}'"
+    "prettier": "prettier --ignore-path ./.prettierignore --check '{src,test}/**/*.{js,ts,jsx,tsx}'"
   },
   "dependencies": {
     "@walletconnect/core": "2.17.3",
