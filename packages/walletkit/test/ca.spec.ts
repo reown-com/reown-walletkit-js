@@ -1,88 +1,12 @@
 import { TEST_METADATA } from "./shared/values";
-import { Core, RELAYER_EVENTS } from "@walletconnect/core";
-import {
-  JsonRpcPayload,
-  formatJsonRpcResult,
-  isJsonRpcRequest,
-} from "@walletconnect/jsonrpc-utils";
-import { SignClient, ENGINE_RPC_OPTS } from "@walletconnect/sign-client";
-import { CoreTypes, ICore, ISignClient, SessionTypes } from "@walletconnect/types";
-import { buildApprovedNamespaces, buildAuthObject, getSdkError } from "@walletconnect/utils";
-import { toMiliseconds } from "@walletconnect/time";
+import { Core } from "@walletconnect/core";
+import { SignClient } from "@walletconnect/sign-client";
+import { ICore, ISignClient, SessionTypes } from "@walletconnect/types";
 import { Wallet as CryptoWallet } from "@ethersproject/wallet";
 
 import { expect, describe, it, beforeEach, vi, beforeAll, afterEach } from "vitest";
-import {
-  WalletKit,
-  IWalletKit,
-  ChainAbstractionTypes,
-  FULFILMENT_STATUS,
-  CAN_FULFIL_STATUS,
-} from "../src";
-import {
-  disconnect,
-  TEST_CORE_OPTIONS,
-  TEST_ETHEREUM_CHAIN,
-  TEST_NAMESPACES,
-  TEST_REQUIRED_NAMESPACES,
-  TEST_UPDATED_NAMESPACES,
-} from "./shared";
-
-let routeResponse = {
-  status: CAN_FULFIL_STATUS.available,
-  data: {
-    routes: {
-      transactions: [
-        {
-          to: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
-          from: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
-          value: "0x",
-          chainId: "eip155:1",
-        },
-      ],
-      metadata: {
-        fundingFrom: [
-          {
-            tokenContract: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
-            amount: "0x",
-            chainId: "eip155:1",
-            symbol: "ETH",
-          },
-        ],
-      },
-      orchestratorId: "1234",
-      checkIn: 3000,
-    },
-    routesDetails: {
-      localTotal: {},
-    },
-  },
-};
-
-let statusResponse = {
-  status: FULFILMENT_STATUS.pending,
-  createdAt: new Date().getTime(),
-  checkIn: 300,
-};
-
-const setRouteResponse = (response: any) => {
-  routeResponse = response;
-};
-
-const setStatusResponse = (response: any) => {
-  statusResponse = response;
-};
-
-global.yttrium = {
-  checkStatus: (params) => {
-    console.log("status", params);
-    return Promise.resolve(statusResponse);
-  },
-  checkRoute: (params) => {
-    console.log("route", params);
-    return Promise.resolve(routeResponse);
-  },
-};
+import { WalletKit, IWalletKit, CAN_FULFIL_STATUS } from "../src";
+import { disconnect, TEST_CORE_OPTIONS, TEST_REQUIRED_NAMESPACES } from "./shared";
 
 describe("Chain Abstraction", () => {
   let core: ICore;
@@ -125,26 +49,69 @@ describe("Chain Abstraction", () => {
     expect(wallet.engine.signClient.signConfig).to.toMatchObject(signConfig);
   });
 
-  it("should reject canFulfil in node", async () => {
-    await wallet.canFulfil({
+  it("should get not_required", async () => {
+    const result = await wallet.prepareFulfilment({
       transaction: {
         to: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
         from: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
+        data: "0x",
         value: "0x",
         chainId: "eip155:1",
       },
     });
+    expect(result).to.be.exist;
+    expect(result.status).to.be.eq(CAN_FULFIL_STATUS.not_required);
   });
-  it("should get fulfilmentStatus", async () => {
-    const result = await wallet.fulfilmentStatus({
-      fulfilmentId: "1234",
+
+  it("should get routes", async () => {
+    const result = await wallet.prepareFulfilment({
+      transaction: {
+        chainId: "eip155:42161",
+        data: "0xa9059cbb00000000000000000000000013a2ff792037aa2cd77fe1f4b522921ac59a9c5200000000000000000000000000000000000000000000000000000000003d0900",
+        from: "0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52",
+        to: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+        value: "0x0",
+      },
+    });
+    expect(result).to.be.exist;
+    expect(result.status).to.be.eq(CAN_FULFIL_STATUS.available);
+    if (result.status === CAN_FULFIL_STATUS.available) {
+      expect(result.data).to.be.exist;
+      expect(result.data.fulfilmentId).to.be.exist;
+      expect(result.data.funding).to.be.exist;
+      expect(result.data.transactions).to.be.exist;
+      expect(result.data.initialTransactionMetadata).to.be.exist;
+    }
+  });
+
+  it("should get routes details", async () => {
+    const initialTx = {
+      chainId: "eip155:42161",
+      data: "0xa9059cbb00000000000000000000000013a2ff792037aa2cd77fe1f4b522921ac59a9c5200000000000000000000000000000000000000000000000000000000003d0900",
+      from: "0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52",
+      to: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+      value: "0x0",
+    };
+    const prepareResult = await wallet.prepareFulfilment({
+      transaction: initialTx,
     });
 
-    expect(result).to.be.exist;
-    expect(result.status).to.be.eq(FULFILMENT_STATUS.pending);
-    expect(result.createdAt).to.be.exist;
-    if (result.status === FULFILMENT_STATUS.pending) {
-      expect(result.checkIn).to.be.a("number");
-    }
+    const result = await wallet.getFulfilmentDetails({
+      fulfilmentId: prepareResult.status === "available" ? prepareResult.data.fulfilmentId : "",
+    });
+
+    expect(result.bridgeDetails).to.be.exist;
+    expect(result.initialTransactionDetails).to.be.exist;
+    expect(result.routeDetails).to.be.exist;
+    expect(result.totalFee).to.be.exist;
+    expect(result.initialTransactionDetails.transaction.chainId).to.be.eq(initialTx.chainId);
+    expect(result.initialTransactionDetails.transaction.input).to.be.eq(initialTx.data);
+    expect(result.initialTransactionDetails.transaction.from.toLowerCase()).to.be.eq(
+      initialTx.from.toLowerCase(),
+    );
+    expect(result.initialTransactionDetails.transaction.to.toLowerCase()).to.be.eq(
+      initialTx.to.toLowerCase(),
+    );
+    expect(result.initialTransactionDetails.transaction.value).to.be.eq(initialTx.value);
   });
 });

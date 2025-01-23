@@ -4,8 +4,10 @@ export declare namespace ChainAbstractionTypes {
   type InitialTransaction = {
     from: string;
     to: string;
-    data: string;
     chainId: string;
+    value?: string;
+    input?: string;
+    data?: string;
   };
 
   type Transaction = {
