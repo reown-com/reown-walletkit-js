@@ -22,6 +22,6 @@ function compressWasmAndConvertToBase64(wasmFilePath, outputTsFilePath) {
 }
 
 const wasmFilePath = path.resolve(__dirname, "./../libs/yttrium/yttrium_bg.wasm");
-const outputTsFilePath = path.resolve(__dirname, "./../libs/yttrium/yttrium-compressed.ts");
+const outputTsFilePath = path.resolve(__dirname, "./../libs/yttrium/yttrium-compressed.js");
 
 compressWasmAndConvertToBase64(wasmFilePath, outputTsFilePath);

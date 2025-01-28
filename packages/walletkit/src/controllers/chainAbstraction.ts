@@ -5,7 +5,8 @@ import { ChainAbstractionTypes, IChainAbstraction, IWalletKitEngine } from "../t
 import { FULFILMENT_STATUS, CAN_FULFIL_STATUS } from "../constants";
 
 import initWasm, { Client, Currency } from "./../libs/yttrium/yttrium";
-import * as compressed from "./../libs/yttrium/yttrium-compressed";
+// @ts-expect-error
+import * as compressed from "./../libs/yttrium/yttrium-compressed.js";
 import { decompressData } from "../utils";
 
 export class ChainAbstraction extends IChainAbstraction {
