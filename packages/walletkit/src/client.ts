@@ -186,6 +186,53 @@ export class WalletKit extends IWalletKit {
     }
   };
 
+  // ---------- Chain Abstraction ----------------------------------------------- //
+
+  public prepareFulfilment: IWalletKit["prepareFulfilment"] = async (params) => {
+    try {
+      return await this.engine.prepareFulfilment(params);
+    } catch (error: any) {
+      this.logger.error(error.message);
+      throw error;
+    }
+  };
+
+  public fulfilmentStatus: IWalletKit["fulfilmentStatus"] = async (params) => {
+    try {
+      return await this.engine.fulfilmentStatus(params);
+    } catch (error: any) {
+      this.logger.error(error.message);
+      throw error;
+    }
+  };
+
+  public estimateFees: IWalletKit["estimateFees"] = async (params) => {
+    try {
+      return await this.engine.estimateFees(params);
+    } catch (error: any) {
+      this.logger.error(error.message);
+      throw error;
+    }
+  };
+
+  public getERC20Balance: IWalletKit["getERC20Balance"] = async (params) => {
+    try {
+      return await this.engine.getERC20Balance(params);
+    } catch (error: any) {
+      this.logger.error(error.message);
+      throw error;
+    }
+  };
+
+  public getFulfilmentDetails: IWalletKit["getFulfilmentDetails"] = async (params) => {
+    try {
+      return await this.engine.getFulfilmentDetails(params);
+    } catch (error: any) {
+      this.logger.error(error.message);
+      throw error;
+    }
+  };
+
   // ---------- Private ----------------------------------------------- //
 
   private async initialize() {
