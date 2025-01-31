@@ -1029,4 +1029,26 @@ describe("Sign Integration", () => {
       await disconnect(dapp.core);
     });
   });
+
+  it("should send core init event when walletkit initializes", async () => {
+    process.env.IS_VITEST = false as any;
+    const core = new Core({ ...TEST_CORE_OPTIONS, telemetryEnabled: false });
+    let initCalled = false;
+    expect(initCalled).to.be.false;
+    // @ts-expect-error - accessing private properties
+    core.eventClient.sendEvent = async (payload: any) => {
+      initCalled = true;
+      expect(payload).toBeDefined();
+      expect(payload.length).to.eql(1);
+      expect(payload[0].props.event).to.eql("INIT");
+      expect(payload[0].props.properties.client_id).to.eql(await core.crypto.getClientId());
+    };
+    await WalletKit.init({
+      core,
+      name: "wallet",
+      metadata: TEST_METADATA,
+    });
+    expect(initCalled).to.be.true;
+    process.env.IS_VITEST = true as any;
+  });
 });
