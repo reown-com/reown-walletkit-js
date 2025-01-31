@@ -70,6 +70,7 @@ export declare namespace ChainAbstractionTypes {
     amount: string;
     chainId: string;
     symbol: string;
+    decimals: number;
   };
 
   type PrepareFulfilmentHandlerResult =

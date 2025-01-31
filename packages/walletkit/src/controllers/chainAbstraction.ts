@@ -185,7 +185,7 @@ export class ChainAbstraction extends IChainAbstraction {
       },
     };
 
-    const totalFee: ChainAbstractionTypes.TotalFee = result.localTotal || result.local_total;
+    const totalFee = result.localTotal || result.local_total;
 
     console.log("getFulfilmentDetails parsed result", {
       routeDetails,
@@ -198,7 +198,10 @@ export class ChainAbstraction extends IChainAbstraction {
       routeDetails,
       initialTransactionDetails,
       bridgeDetails,
-      totalFee,
+      totalFee: {
+        ...totalFee,
+        formattedAlt: totalFee.formattedAlt || totalFee.formatted_alt,
+      },
     };
   };
 
