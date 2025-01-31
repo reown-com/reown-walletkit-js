@@ -17,6 +17,9 @@ export class Engine extends IWalletKitEngine {
       metadata: this.client.metadata,
       signConfig: this.client.signConfig,
     });
+    this.signClient.core.eventClient.init().catch((error) => {
+      this.client.logger.warn(error);
+    });
   };
 
   public pair: IWalletKitEngine["pair"] = async (params) => {
