@@ -100,15 +100,17 @@ export abstract class IWalletKitEngine {
 
   // ---------- Chain Abstraction ------------------------------------ //
 
-  public abstract prepareFulfilment: IChainAbstraction["prepareFulfilment"];
+  public abstract prepare: IChainAbstraction["prepare"];
 
-  public abstract fulfilmentStatus: IChainAbstraction["fulfilmentStatus"];
-
-  public abstract estimateFees: IChainAbstraction["estimateFees"];
+  public abstract status: IChainAbstraction["status"];
 
   public abstract getERC20Balance: IChainAbstraction["getERC20Balance"];
 
-  public abstract getFulfilmentDetails: IChainAbstraction["getFulfilmentDetails"];
+  public abstract getPrepareDetails: IChainAbstraction["getPrepareDetails"];
+
+  public abstract execute: IChainAbstraction["execute"];
+
+  public abstract prepareDetailed: IChainAbstraction["prepareDetailed"];
 
   // ---------- Event Handlers ----------------------------------------------- //
   public abstract on: <E extends WalletKitTypes.Event>(

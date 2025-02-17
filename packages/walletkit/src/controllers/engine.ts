@@ -126,24 +126,28 @@ export class Engine extends IWalletKitEngine {
   };
 
   // Chain Abstraction //
-  public prepareFulfilment: IWalletKitEngine["prepareFulfilment"] = async (params) => {
-    return await this.chainAbstraction.prepareFulfilment(params);
+  public prepare: IWalletKitEngine["prepare"] = (params) => {
+    return this.chainAbstraction.prepare(params);
   };
 
-  public fulfilmentStatus: IWalletKitEngine["fulfilmentStatus"] = async (params) => {
-    return await this.chainAbstraction.fulfilmentStatus(params);
+  public status: IWalletKitEngine["status"] = (params) => {
+    return this.chainAbstraction.status(params);
   };
 
-  public estimateFees: IWalletKitEngine["estimateFees"] = async (params) => {
-    return await this.chainAbstraction.estimateFees(params);
+  public getERC20Balance: IWalletKitEngine["getERC20Balance"] = (params) => {
+    return this.chainAbstraction.getERC20Balance(params);
   };
 
-  public getERC20Balance: IWalletKitEngine["getERC20Balance"] = async (params) => {
-    return await this.chainAbstraction.getERC20Balance(params);
+  public getPrepareDetails: IWalletKitEngine["getPrepareDetails"] = (params) => {
+    return this.chainAbstraction.getPrepareDetails(params);
   };
 
-  public getFulfilmentDetails: IWalletKitEngine["getFulfilmentDetails"] = async (params) => {
-    return await this.chainAbstraction.getFulfilmentDetails(params);
+  public execute: IWalletKitEngine["execute"] = (params) => {
+    return this.chainAbstraction.execute(params);
+  };
+
+  public prepareDetailed: IWalletKitEngine["prepareDetailed"] = (params) => {
+    return this.chainAbstraction.prepareDetailed(params);
   };
 
   // ---------- Private ----------------------------------------------- //

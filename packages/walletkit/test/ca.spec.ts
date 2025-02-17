@@ -5,7 +5,7 @@ import { ICore, ISignClient, SessionTypes } from "@walletconnect/types";
 import { Wallet as CryptoWallet } from "@ethersproject/wallet";
 
 import { expect, describe, it, beforeEach, vi, beforeAll, afterEach } from "vitest";
-import { WalletKit, IWalletKit, CAN_FULFIL_STATUS } from "../src";
+import { WalletKit, IWalletKit, CAN_FULFIL_STATUS, ChainAbstractionTypes } from "../src";
 import { disconnect, TEST_CORE_OPTIONS, TEST_REQUIRED_NAMESPACES } from "./shared";
 
 describe("Chain Abstraction", () => {
@@ -49,69 +49,80 @@ describe("Chain Abstraction", () => {
     expect(wallet.engine.signClient.signConfig).to.toMatchObject(signConfig);
   });
 
-  it("should get not_required", async () => {
-    const result = await wallet.prepareFulfilment({
+  it.only("should get routes detailed", async () => {
+    const testTxData: ChainAbstractionTypes.Transaction = {
+      chainId: "eip155:10",
+      from: "0x13a2ff792037aa2cd77fe1f4b522921ac59a9c52",
+      to: "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
+      value: "0x",
+      input:
+        "0xa9059cbb00000000000000000000000013a2ff792037aa2cd77fe1f4b522921ac59a9c5200000000000000000000000000000000000000000000000000000000003d0900",
+      gasLimit: "0x3b8ec",
+      nonce: "0x62",
+    };
+    const result = await wallet.chainAbstraction.prepareDetailed({
+      transaction: testTxData,
+    });
+    console.log("prepare detailed", JSON.stringify(result, null, 2));
+    // if ("orchestrationId" in result) {
+    //   console.log("orchestrationId", result.orchestrationId);
+    //   const details = await wallet.chainAbstraction.getPrepareDetails({
+    //     orchestrationId: result.orchestrationId,
+    //   });
+    //   console.log(JSON.stringify(details, null, 2));
+    // }
+    expect(result).to.be.exist;
+
+    if ("error" in result) {
+      throw new Error(result.error.error);
+    }
+
+    expect(result.success).to.be.exist;
+
+    if ("notRequired" in result.success) {
+      throw new Error("notRequired result not expected");
+    }
+
+    expect(result.success.available).to.be.exist;
+    expect(result.success.available.bridge).to.be.exist;
+    expect(result.success.available.initial).to.be.exist;
+    expect(result.success.available.localBridgeTotal).to.be.exist;
+    expect(result.success.available.localRouteTotal).to.be.exist;
+    expect(result.success.available.localTotal).to.be.exist;
+    expect(result.success.available.route).to.be.exist;
+    expect(result.success.available.routeResponse).to.be.exist;
+    expect(result.success.available.routeResponse.orchestrationId).to.be.exist;
+    const initialTransaction = result.success.available.routeResponse.initialTransaction;
+    expect(initialTransaction).to.be.exist;
+    expect(initialTransaction.chainId).to.be.eq(testTxData.chainId);
+    expect(initialTransaction.input).to.be.eq(testTxData.input);
+    expect(initialTransaction.from.toLowerCase()).to.be.eq(testTxData.from.toLowerCase());
+    expect(initialTransaction.to.toLowerCase()).to.be.eq(testTxData.to.toLowerCase());
+  });
+
+  it("should get not required", async () => {
+    const result = await wallet.chainAbstraction.prepareDetailed({
       transaction: {
         to: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
         from: "0x1cBd3fE73bC46a896e3eDd39E54c482798bB3D58",
-        data: "0x",
+        input: "0x",
         value: "0x",
         chainId: "eip155:1",
+        gasLimit: "0x3b8ec",
+        nonce: "0x62",
       },
     });
-    expect(result).to.be.exist;
-    expect(result.status).to.be.eq(CAN_FULFIL_STATUS.not_required);
-  });
 
-  it("should get routes", async () => {
-    const result = await wallet.prepareFulfilment({
-      transaction: {
-        chainId: "eip155:42161",
-        data: "0xa9059cbb00000000000000000000000013a2ff792037aa2cd77fe1f4b522921ac59a9c5200000000000000000000000000000000000000000000000000000000003d0900",
-        from: "0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52",
-        to: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-        value: "0x0",
-      },
-    });
-    expect(result).to.be.exist;
-    expect(result.status).to.be.eq(CAN_FULFIL_STATUS.available);
-    if (result.status === CAN_FULFIL_STATUS.available) {
-      expect(result.data).to.be.exist;
-      expect(result.data.fulfilmentId).to.be.exist;
-      expect(result.data.funding).to.be.exist;
-      expect(result.data.transactions).to.be.exist;
-      expect(result.data.initialTransactionMetadata).to.be.exist;
+    if ("error" in result) {
+      throw new Error(result.error.error);
     }
-  });
 
-  it("should get routes details", async () => {
-    const initialTx = {
-      chainId: "eip155:42161",
-      data: "0xa9059cbb00000000000000000000000013a2ff792037aa2cd77fe1f4b522921ac59a9c5200000000000000000000000000000000000000000000000000000000003d0900",
-      from: "0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52",
-      to: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-      value: "0x0",
-    };
-    const prepareResult = await wallet.prepareFulfilment({
-      transaction: initialTx,
-    });
+    const success = result.success;
 
-    const result = await wallet.getFulfilmentDetails({
-      fulfilmentId: prepareResult.status === "available" ? prepareResult.data.fulfilmentId : "",
-    });
+    if ("available" in success) {
+      throw new Error("available result not expected");
+    }
 
-    expect(result.bridgeDetails).to.be.exist;
-    expect(result.initialTransactionDetails).to.be.exist;
-    expect(result.routeDetails).to.be.exist;
-    expect(result.totalFee).to.be.exist;
-    expect(result.initialTransactionDetails.transaction.chainId).to.be.eq(initialTx.chainId);
-    expect(result.initialTransactionDetails.transaction.input).to.be.eq(initialTx.data);
-    expect(result.initialTransactionDetails.transaction.from.toLowerCase()).to.be.eq(
-      initialTx.from.toLowerCase(),
-    );
-    expect(result.initialTransactionDetails.transaction.to.toLowerCase()).to.be.eq(
-      initialTx.to.toLowerCase(),
-    );
-    expect(result.initialTransactionDetails.transaction.value).to.be.eq(initialTx.value);
+    expect(success.notRequired).to.be.exist;
   });
 });

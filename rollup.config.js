@@ -2,6 +2,7 @@ import esbuild from "rollup-plugin-esbuild";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
+import copy from "rollup-plugin-copy";
 
 const input = "./src/index.ts";
 const plugins = [
@@ -14,6 +15,9 @@ const plugins = [
     loaders: {
       ".json": "json",
     },
+  }),
+  copy({
+    targets: [{ src: "src/libs/yttrium/yttrium.d.ts", dest: "dist/types/libs/yttrium" }, { src: "src/libs/yttrium/package.json", dest: "dist/types/libs/yttrium" }],
   }),
 ];
 

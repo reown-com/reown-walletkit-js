@@ -1,157 +1,68 @@
 import { IWalletKitEngine } from "./engine";
 
+import type {
+  InitialTransactionMetadata,
+  Transaction,
+  Client,
+  PrepareDetailedResponseSuccess,
+  PrepareResponseAvailable,
+  UiFields,
+  FundingMetadata,
+  Hex,
+} from "./../libs/yttrium";
+
 export declare namespace ChainAbstractionTypes {
-  type InitialTransaction = {
-    from: string;
-    to: string;
+  export { Transaction };
+  export { InitialTransactionMetadata };
+  export { PrepareDetailedResponseSuccess };
+  export { PrepareResponseAvailable };
+  export { UiFields };
+  export { FundingMetadata };
+  export { Hex };
+  export type ERC20BalanceResponse = ReturnType<Client["erc20_token_balance"]>;
+  export type PrepareDetailedResponse = ReturnType<Client["prepare_detailed"]>;
+  export type PrepareResponse = ReturnType<Client["prepare"]>;
+  export type StatusResponse = ReturnType<Client["status"]>;
+  export type UiFieldsResponse = ReturnType<Client["get_ui_fields"]>;
+  export type ExecuteResult = ReturnType<Client["execute"]>;
+  export type OrchestrationId = string;
+  export type SignedTransaction = string;
+  export type PartialTransaction = {
+    from: Hex;
+    to: Hex;
+    input: Hex;
     chainId: string;
-    value?: string;
-    input?: string;
-    data?: string;
-  };
-
-  type Transaction = {
-    from: string;
-    to: string;
-    value: string;
-    chainId: string;
-    gasLimit: string;
-    input: string;
-    nonce: string;
-    maxFeePerGas: string;
-    maxPriorityFeePerGas: string;
-  };
-
-  type InitialTransactionMetadata = {
-    symbol: string;
-    amount: string;
-    decimals: number;
-    tokenContract: string;
-    transferTo: string;
-  };
-
-  type FulfilmentStatusResponse = {
-    createdAt: number;
-    status: "completed";
-  };
-
-  type FulfilmentStatusHandlerResponse = {
-    createdAt: number;
-  } & (
-    | {
-        status: "completed";
-      }
-    | { status: "pending"; checkIn: number }
-    | { status: "error"; reason: string }
-  );
-
-  type PrepareFulfilmentResponse =
-    | {
-        status: "not_required";
-      }
-    | {
-        status: "available";
-        data: {
-          fulfilmentId: string;
-          checkIn: number;
-          transactions: Transaction[];
-          funding: FundingFrom[];
-          initialTransaction: Transaction;
-          initialTransactionMetadata: InitialTransactionMetadata;
-        };
-      }
-    | {
-        status: "error";
-        reason: string;
-      };
-
-  type FundingFrom = {
-    tokenContract: string;
-    amount: string;
-    chainId: string;
-    symbol: string;
-    decimals: number;
-  };
-
-  type PrepareFulfilmentHandlerResult =
-    | {
-        status: "error";
-        reason: string;
-      }
-    | {
-        status: "not_required";
-      }
-    | {
-        status: "available";
-        data: {
-          orchestrationId: string;
-          checkIn: number;
-          metadata: {
-            fundingFrom: FundingFrom[];
-            initialTransaction: InitialTransactionMetadata;
-          };
-          transactions: Transaction[];
-          initialTransaction: Transaction;
-        };
-      };
-
-  type EstimateFeesResponse = {
-    maxFeePerGas: string;
-    maxPriorityFeePerGas: string;
-  };
-
-  type ERC20BalanceResponse = {
-    balance: string;
-  };
-
-  type TotalFee = {
-    symbol: string;
-    amount: string;
-    unit: number;
-    formatted: string;
-    formattedAlt: string;
-  };
-
-  type TransactionFee = {
-    fee: TotalFee;
-    localFee: TotalFee;
-  };
-
-  type TransactionDetails = {
-    transaction: Transaction;
-    eip1559: EstimateFeesResponse;
-    transactionFee: TransactionFee;
-  };
-
-  type FulfilmentDetailsResponse = {
-    routeDetails: TransactionDetails[];
-    initialTransactionDetails: TransactionDetails;
-    bridgeDetails: TransactionFee[];
-    totalFee: TotalFee;
+    value?: Hex;
   };
 }
 export abstract class IChainAbstraction {
   constructor(public engine: IWalletKitEngine) {}
 
-  public abstract prepareFulfilment(params: {
-    transaction: ChainAbstractionTypes.InitialTransaction;
-  }): Promise<ChainAbstractionTypes.PrepareFulfilmentResponse>;
+  public abstract prepare(params: {
+    transaction: ChainAbstractionTypes.PartialTransaction;
+  }): ChainAbstractionTypes.PrepareResponse;
 
-  public abstract fulfilmentStatus(params: {
-    fulfilmentId: string;
-  }): Promise<ChainAbstractionTypes.FulfilmentStatusResponse>;
+  public abstract prepareDetailed(params: {
+    transaction: ChainAbstractionTypes.PartialTransaction;
+  }): ChainAbstractionTypes.PrepareDetailedResponse;
 
-  public abstract estimateFees(params: {
-    chainId: string;
-  }): Promise<ChainAbstractionTypes.EstimateFeesResponse>;
+  public abstract status(params: {
+    orchestrationId: ChainAbstractionTypes.OrchestrationId;
+  }): ChainAbstractionTypes.StatusResponse;
 
   public abstract getERC20Balance(params: {
     chainId: string;
     tokenAddress: string;
     ownerAddress: string;
-  }): Promise<ChainAbstractionTypes.ERC20BalanceResponse>;
+  }): ChainAbstractionTypes.ERC20BalanceResponse;
 
-  public abstract getFulfilmentDetails(params: {
-    fulfilmentId: string;
-  }): Promise<ChainAbstractionTypes.FulfilmentDetailsResponse>;
+  public abstract getPrepareDetails(params: {
+    orchestrationId: ChainAbstractionTypes.OrchestrationId;
+  }): ChainAbstractionTypes.UiFieldsResponse;
+
+  public abstract execute(params: {
+    orchestrationId: ChainAbstractionTypes.OrchestrationId;
+    bridgeSignedTransactions: ChainAbstractionTypes.SignedTransaction[];
+    initialSignedTransaction: ChainAbstractionTypes.SignedTransaction;
+  }): ChainAbstractionTypes.ExecuteResult;
 }

@@ -1,21 +1,20 @@
 /* eslint-disable no-console */
 import { ENV_MAP, getEnvironment } from "@walletconnect/utils";
-import { THIRTY_SECONDS, toMiliseconds } from "@walletconnect/time";
 import { ChainAbstractionTypes, IChainAbstraction, IWalletKitEngine } from "../types";
-import { FULFILMENT_STATUS, CAN_FULFIL_STATUS } from "../constants";
 
-import initWasm, { Client, Currency } from "./../libs/yttrium/yttrium";
+import initWasm, { Client, Currency } from "./../libs/yttrium";
+
 // @ts-expect-error
 import * as compressed from "./../libs/yttrium/yttrium-compressed.js";
 import { decompressData } from "../utils";
 
 export class ChainAbstraction extends IChainAbstraction {
-  private prepareFulfilmentHandler: any;
-  private fulfilmentStatusHandler: any;
-  private estimateFeesHandler: any;
+  private prepareHandler: any;
+  private statusHandler: any;
   private getERC20BalanceHandler: any;
-  private getFulfilmentDetailsHandler: any;
-  private statusPollingTimeout = THIRTY_SECONDS;
+  private getPrepareDetailsHandler: any;
+  private prepareDetailedHandler: any;
+  private executeHandler: any;
   private projectId: string;
   private initPromise?: Promise<void>;
 
@@ -29,180 +28,52 @@ export class ChainAbstraction extends IChainAbstraction {
     this.projectId = this.engine.client.core.projectId || "";
   }
 
-  public prepareFulfilment: IChainAbstraction["prepareFulfilment"] = async (params) => {
-    await this.initPromise;
-    console.log("prepareFulfilment", params, this.prepareFulfilmentHandler);
-    if (!this.prepareFulfilmentHandler) {
+  public prepare: IChainAbstraction["prepare"] = async (params) => {
+    await this.toInitPromise();
+    if (!this.prepareHandler) {
       throw new Error(`prepareFulfilmentHandler not found for environment: '${getEnvironment()}'`);
     }
-
-    const { transaction } = params;
-
-    const result = (await this.prepareFulfilmentHandler({
-      transaction,
-      projectId: this.projectId,
-    })) as ChainAbstractionTypes.PrepareFulfilmentHandlerResult;
-    console.log("prepareFulfilment processing result..", result);
-    switch (result.status) {
-      case CAN_FULFIL_STATUS.error:
-        return { status: CAN_FULFIL_STATUS.error, reason: result.reason };
-      case CAN_FULFIL_STATUS.not_required:
-        return { status: CAN_FULFIL_STATUS.not_required };
-      case CAN_FULFIL_STATUS.available:
-        // eslint-disable-next-line no-case-declarations
-        const routes = result.data;
-        return {
-          status: CAN_FULFIL_STATUS.available,
-          data: {
-            fulfilmentId: routes.orchestrationId,
-            checkIn: routes.checkIn,
-            transactions: routes.transactions,
-            funding: routes.metadata.fundingFrom,
-            initialTransaction: routes.initialTransaction,
-            initialTransactionMetadata: routes.metadata.initialTransaction,
-          },
-        };
-      default:
-        throw new Error(`Invalid prepareFulfilment status: ${JSON.stringify(result)}`);
-    }
+    return this.prepareHandler(params);
   };
 
-  public fulfilmentStatus: IChainAbstraction["fulfilmentStatus"] = async (params) => {
-    await this.initPromise;
-    if (!this.fulfilmentStatusHandler) {
-      throw new Error(`fulfilmentStatusHandler not found for environment: '${getEnvironment()}'`);
+  public prepareDetailed: IWalletKitEngine["prepareDetailed"] = async (params) => {
+    await this.toInitPromise();
+    if (!this.prepareDetailedHandler) {
+      throw new Error(`prepareDetailedHandler not found for environment: '${getEnvironment()}'`);
     }
-
-    const { fulfilmentId } = params;
-
-    const timeout = setTimeout(() => {
-      throw new Error(`Fulfilment status polling timeout: ${fulfilmentId}`);
-    }, toMiliseconds(this.statusPollingTimeout));
-
-    let result;
-
-    do {
-      const statusResult = (await this.fulfilmentStatusHandler({
-        orchestrationId: fulfilmentId,
-        projectId: this.projectId,
-      })) as ChainAbstractionTypes.FulfilmentStatusHandlerResponse;
-
-      console.log("fulfilmentStatus result", statusResult);
-
-      if (statusResult.status === FULFILMENT_STATUS.pending) {
-        console.log("fulfilmentStatus pending retrying...", statusResult);
-        await new Promise((resolve) => setTimeout(resolve, statusResult.checkIn));
-        continue;
-      }
-
-      if (statusResult.status === FULFILMENT_STATUS.error) {
-        clearTimeout(timeout);
-        throw new Error(statusResult.reason);
-      }
-
-      clearTimeout(timeout);
-      result = statusResult;
-    } while (!result);
-
-    return result;
+    return this.prepareDetailedHandler(params);
   };
 
-  /**
-   * TODO: pass projectId to yttrium handlers
-   */
-
-  public estimateFees: IChainAbstraction["estimateFees"] = async (params) => {
-    await this.initPromise;
-    if (!this.estimateFeesHandler) {
-      throw new Error(`estimateFeesHandler not found for environment: '${getEnvironment()}'`);
+  public status: IChainAbstraction["status"] = async (params) => {
+    await this.toInitPromise();
+    if (!this.statusHandler) {
+      throw new Error(`statusHandler not found for environment: '${getEnvironment()}'`);
     }
-    const result = await this.estimateFeesHandler({
-      ...params,
-      projectId: this.projectId,
-    });
-
-    console.log("estimateFees result", result);
-    return result;
+    return this.statusHandler(params);
   };
 
   public getERC20Balance: IChainAbstraction["getERC20Balance"] = async (params) => {
-    await this.initPromise;
+    await this.toInitPromise();
     if (!this.getERC20BalanceHandler) {
       throw new Error(`getERC20BalanceHandler not found for environment: '${getEnvironment()}'`);
     }
-    const result = await this.getERC20BalanceHandler({
-      ...params,
-      projectId: this.projectId,
-    });
-
-    console.log("getERC20Balance result", result);
-    return result;
+    return this.getERC20BalanceHandler(params);
   };
 
-  public getFulfilmentDetails: IChainAbstraction["getFulfilmentDetails"] = async (params) => {
-    await this.initPromise;
-    if (!this.getFulfilmentDetailsHandler) {
-      throw new Error(
-        `getFulfilmentDetailsHandler not found for environment: '${getEnvironment()}'`,
-      );
+  public getPrepareDetails: IChainAbstraction["getPrepareDetails"] = async (params) => {
+    await this.toInitPromise();
+    if (!this.getPrepareDetailsHandler) {
+      throw new Error(`getPrepareDetailsHandler not found for environment: '${getEnvironment()}'`);
     }
-    const { fulfilmentId } = params;
-    const result = await this.getFulfilmentDetailsHandler({
-      ...params,
-      orchestrationId: fulfilmentId,
-      projectId: this.projectId,
-    });
+    return this.getPrepareDetailsHandler(params);
+  };
 
-    console.log("getFulfilmentDetails handler result", result);
-    const bridgeDetails: ChainAbstractionTypes.TransactionFee[] = [];
-
-    for (const fees of result.bridge) {
-      bridgeDetails.push({
-        fee: fees.fee,
-        localFee: fees.localFee || fees.local_fee,
-      });
+  public execute: IChainAbstraction["execute"] = async (params) => {
+    await this.toInitPromise();
+    if (!this.executeHandler) {
+      throw new Error(`executeHandler not found for environment: '${getEnvironment()}'`);
     }
-
-    const routeDetails: ChainAbstractionTypes.TransactionDetails[] = [];
-
-    for (const transaction of result.route) {
-      routeDetails.push({
-        transaction: transaction.transaction,
-        eip1559: transaction.estimate,
-        transactionFee: {
-          fee: transaction.fee.fee,
-          localFee: transaction.fee.localFee || transaction.fee.local_fee,
-        },
-      });
-    }
-
-    const initialTransactionDetails: ChainAbstractionTypes.TransactionDetails = {
-      transaction: result.initial.transaction,
-      eip1559: result.initial.estimate,
-      transactionFee: {
-        fee: result.initial.fee.fee,
-        localFee: result.initial.fee.localFee || result.initial.fee.local_fee,
-      },
-    };
-
-    const totalFee = result.localTotal || result.local_total;
-
-    console.log("getFulfilmentDetails parsed result", {
-      routeDetails,
-      initialTransactionDetails,
-      bridgeDetails,
-      totalFee,
-    });
-
-    return {
-      routeDetails,
-      initialTransactionDetails,
-      bridgeDetails,
-      totalFee: {
-        ...totalFee,
-        formattedAlt: totalFee.formattedAlt || totalFee.formatted_alt,
-      },
-    };
+    return this.executeHandler(params);
   };
 
   private loadHandlers = async () => {
@@ -225,16 +96,18 @@ export class ChainAbstraction extends IChainAbstraction {
         console.warn("React Native Yttrium not found in global scope");
         return;
       }
-      this.prepareFulfilmentHandler = async (params: any) =>
-        this.parseResult(await yttrium.prepare(params));
-      this.fulfilmentStatusHandler = async (params: any) =>
-        this.parseResult(await yttrium.status(params));
-      this.estimateFeesHandler = async (params: any) =>
-        this.parseResult(await yttrium.estimateFees(params));
+      this.prepareHandler = async (params: any) =>
+        this.parseResult(await yttrium.prepare({ ...params, projectId: this.projectId }));
+      this.statusHandler = async (params: any) =>
+        this.parseResult(await yttrium.status({ ...params, projectId: this.projectId }));
       this.getERC20BalanceHandler = async (params: any) =>
-        this.parseResult(await yttrium.getERC20Balance(params));
-      this.getFulfilmentDetailsHandler = async (params: any) =>
-        this.parseResult(await yttrium.getBridgeDetails(params));
+        this.parseResult(await yttrium.getERC20Balance({ ...params, projectId: this.projectId }));
+      this.getPrepareDetailsHandler = async (params: any) =>
+        this.parseResult(await yttrium.getBridgeDetails({ ...params, projectId: this.projectId }));
+      this.prepareDetailedHandler = async (params: any) =>
+        this.parseResult(
+          await yttrium.getPrepareDetailed({ ...params, projectId: this.projectId }),
+        );
     } catch (error) {
       console.error("React Native Yttrium init error", error);
     }
@@ -244,35 +117,38 @@ export class ChainAbstraction extends IChainAbstraction {
     try {
       const handlers = await this.initializeInjectedYttrium();
 
-      this.prepareFulfilmentHandler = async (params: any) =>
-        this.parseResult(await handlers.prepare(params));
-      this.fulfilmentStatusHandler = async (params: any) =>
-        this.parseResult(await handlers.status(params));
+      this.prepareHandler = async (params: any) => this.parseResult(await handlers.prepare(params));
+      this.statusHandler = async (params: any) => this.parseResult(await handlers.status(params));
       this.getERC20BalanceHandler = async (params: any) =>
         this.parseResult(await handlers.getERC20Balance(params));
-      this.getFulfilmentDetailsHandler = async (params: any) =>
+      this.getPrepareDetailsHandler = async (params: any) =>
         this.parseResult(await handlers.getBridgeDetails(params));
+      this.prepareDetailedHandler = async (params: any) =>
+        this.parseResult(await handlers.getPrepareDetailed(params));
+      this.executeHandler = async (params: any) => this.parseResult(await handlers.execute(params));
     } catch (error) {
       console.error("Browser Yttrium init error", error);
     }
   };
 
   private Node = async () => {
+    console.log("Node Yttrium init");
     try {
       const handlers = await this.initializeInjectedYttrium();
 
-      this.prepareFulfilmentHandler = async (params: any) =>
-        this.parseResult(await handlers.prepare(params));
-      this.fulfilmentStatusHandler = async (params: any) =>
-        this.parseResult(await handlers.status(params));
+      this.prepareHandler = async (params: any) => this.parseResult(await handlers.prepare(params));
+      this.statusHandler = async (params: any) => this.parseResult(await handlers.status(params));
       this.getERC20BalanceHandler = async (params: any) =>
         this.parseResult(await handlers.getERC20Balance(params));
-      this.getFulfilmentDetailsHandler = async (params: any) =>
+      this.getPrepareDetailsHandler = async (params: any) =>
         this.parseResult(await handlers.getBridgeDetails(params));
+      this.prepareDetailedHandler = async (params: any) =>
+        this.parseResult(await handlers.getPrepareDetailed(params));
+      this.executeHandler = async (params: any) => this.parseResult(await handlers.execute(params));
     } catch (error) {
       console.error("Node Yttrium init error", error);
     }
-    console.log("Node handlers loaded", this.prepareFulfilmentHandler);
+    console.log("Node handlers loaded");
   };
 
   private parseResult = (result: any) => {
@@ -290,45 +166,42 @@ export class ChainAbstraction extends IChainAbstraction {
   private initializeInjectedYttrium = async () => {
     const compressedWasm = Buffer.from(compressed.yttrium, "base64");
     const wasmBuffer = Buffer.from(await decompressData(compressedWasm));
-    await initWasm(wasmBuffer);
+    console.log("initializeInjectedYttrium");
+    await initWasm(wasmBuffer).catch((error) => {
+      console.error("initializeInjectedYttrium error", error);
+    });
+
+    console.log("initializeInjectedYttrium done");
 
     const handlers = {
       prepareResponseCache: {},
-      client: new Client(this.projectId),
-      prepare: async (params: Parameters<IChainAbstraction["prepareFulfilment"]>[0]) => {
-        const { chainId, from, to, value, input, data } = params.transaction;
-
-        const result = await handlers.client.prepare(chainId, from, {
-          to,
-          value: value || "0x",
-          input: input || data,
-        });
-        console.log("prepare called", result);
-
-        if (!result) {
-          throw new Error("Empty response from yttrium's prepare");
-        }
-
-        if (result?.error) {
-          return {
-            status: CAN_FULFIL_STATUS.error,
-            reason: result.error,
-          };
-        }
-
-        if (result?.transactions?.length === 0) {
-          return {
-            status: CAN_FULFIL_STATUS.not_required,
-          };
-        }
+      uiFieldsCache: {} as Record<string, ChainAbstractionTypes.UiFields>,
+      client: new Client(this.projectId, {
+        url: "https://api.yttrium.io",
+        sdkVersion: "1.0.0",
+        sdkPlatform: "desktop",
+        bundleId: undefined,
+        packageName: undefined,
+      }),
+      prepare: async (params: Parameters<IChainAbstraction["prepare"]>[0]) => {
+        const { chainId, from, to, value, input } = params.transaction;
+        console.log("prepare called", params);
+        const result = await handlers.client
+          .prepare(chainId, from, {
+            to,
+            value: value || "0x",
+            input,
+          })
+          .catch((error) => {
+            console.error("prepare error", error);
+            return { error: error.message };
+          });
 
         // @ts-ignore
         handlers.prepareResponseCache[result.orchestrationId] = result;
 
-        return {
-          status: CAN_FULFIL_STATUS.available,
-          data: result,
-        };
+        console.log("prepare called result", result);
+        return result;
       },
       status: async (params: { orchestrationId: string }) => {
         console.log("status called", params);
@@ -352,7 +225,56 @@ export class ChainAbstraction extends IChainAbstraction {
 
         return handlers.client.get_ui_fields(result, Currency.Usd);
       },
+      getPrepareDetailed: async (params: Parameters<IChainAbstraction["prepareDetailed"]>[0]) => {
+        console.log("getPrepareDetailed called", params);
+        const { chainId, from, to, value, input } = params.transaction;
+
+        const result = await handlers.client.prepare_detailed(
+          chainId,
+          from,
+          {
+            to,
+            value: value || "0x",
+            input,
+          },
+          Currency.Usd,
+        );
+
+        if ("error" in result) {
+          throw new Error(result.error.error);
+        }
+
+        if ("notRequired" in result.success) {
+          return result;
+        }
+
+        const orchestrationId = result.success.available.routeResponse.orchestrationId;
+        handlers.uiFieldsCache[orchestrationId] = result.success.available;
+        return result;
+      },
+      execute: (params: Parameters<IChainAbstraction["execute"]>[0]) => {
+        console.log("execute called", params);
+        const { orchestrationId, bridgeSignedTransactions, initialSignedTransaction } = params;
+        const uiFields = handlers.uiFieldsCache[orchestrationId];
+
+        if (!uiFields) {
+          throw new Error(`No uiFields found for orchestrationId: ${orchestrationId}`);
+        }
+        console.log("execute called uiFields found:", uiFields);
+
+        return handlers.client.execute(
+          uiFields,
+          bridgeSignedTransactions,
+          initialSignedTransaction,
+        );
+      },
     };
     return handlers;
   };
+
+  private async toInitPromise() {
+    if (this.initPromise) {
+      await this.initPromise;
+    }
+  }
 }
