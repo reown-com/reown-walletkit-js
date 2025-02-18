@@ -1048,6 +1048,7 @@ describe("Sign Integration", () => {
       name: "wallet",
       metadata: TEST_METADATA,
     });
+    await new Promise((resolve) => setTimeout(resolve, 500));
     expect(initCalled).to.be.true;
     process.env.IS_VITEST = true as any;
   });

@@ -17,7 +17,7 @@ export class Engine extends IWalletKitEngine {
       metadata: this.client.metadata,
       signConfig: this.client.signConfig,
     });
-    await this.signClient.core.eventClient.init().catch((error) => {
+    this.signClient.core.eventClient.init().catch((error) => {
       this.client.logger.warn(error);
     });
   };
