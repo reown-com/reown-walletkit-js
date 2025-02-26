@@ -9,12 +9,13 @@ import * as compressed from "./../libs/yttrium/yttrium-compressed.js";
 import { decompressData } from "../utils";
 
 export class ChainAbstraction extends IChainAbstraction {
-  private prepareHandler: any;
-  private statusHandler: any;
-  private getERC20BalanceHandler: any;
-  private getPrepareDetailsHandler: any;
-  private prepareDetailedHandler: any;
-  private executeHandler: any;
+  private prepareHandler?: IChainAbstraction["prepare"];
+  private statusHandler?: IChainAbstraction["status"];
+  private getERC20BalanceHandler?: IChainAbstraction["getERC20Balance"];
+  private getPrepareDetailsHandler?: IChainAbstraction["getPrepareDetails"];
+  private prepareDetailedHandler?: IChainAbstraction["prepareDetailed"];
+  private executeHandler?: IChainAbstraction["execute"];
+
   private projectId: string;
   private initPromise?: Promise<void>;
 
@@ -174,7 +175,7 @@ export class ChainAbstraction extends IChainAbstraction {
     console.log("initializeInjectedYttrium done");
 
     const handlers = {
-      prepareResponseCache: {},
+      prepareResponseCache: {} as Record<string, ChainAbstractionTypes.PrepareResponseAvailable>,
       uiFieldsCache: {} as Record<string, ChainAbstractionTypes.UiFields>,
       client: new Client(this.projectId, {
         url: "https://api.yttrium.io",
@@ -196,8 +197,9 @@ export class ChainAbstraction extends IChainAbstraction {
             return { error: error.message };
           });
 
-        // @ts-ignore
-        handlers.prepareResponseCache[result.orchestrationId] = result;
+        if ("orchestrationId" in result) {
+          handlers.prepareResponseCache[result.orchestrationId] = result;
+        }
 
         console.log("prepare called result", result);
         return result;
