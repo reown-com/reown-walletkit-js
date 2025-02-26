@@ -181,7 +181,6 @@ export class ChainAbstraction extends IChainAbstraction {
         sdkVersion: "1.0.0",
         sdkPlatform: "desktop",
         bundleId: undefined,
-        packageName: undefined,
       }),
       prepare: async (params: Parameters<IChainAbstraction["prepare"]>[0]) => {
         const { chainId, from, to, value, input } = params.transaction;

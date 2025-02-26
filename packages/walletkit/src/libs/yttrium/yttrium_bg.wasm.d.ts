@@ -44,6 +44,6 @@ export const __wbindgen_export_4: WebAssembly.Table;
 export const __wbindgen_export_5: WebAssembly.Table;
 export const __wbindgen_free: (a: number, b: number, c: number) => void;
 export const _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__heb3f862823f1d1fd: (a: number, b: number) => void;
-export const closure777_externref_shim: (a: number, b: number, c: any) => void;
-export const closure1016_externref_shim: (a: number, b: number, c: any, d: any) => void;
+export const closure779_externref_shim: (a: number, b: number, c: any) => void;
+export const closure1018_externref_shim: (a: number, b: number, c: any, d: any) => void;
 export const __wbindgen_start: () => void;

@@ -11,57 +11,6 @@ export enum Currency {
   Btc = 7,
   Eth = 8,
 }
-export interface Transaction {
-    chainId: string;
-    from: Address;
-    to: Address;
-    value: U256;
-    input: Bytes;
-    gasLimit: U64;
-    nonce: U64;
-}
-
-export interface FeeEstimatedTransaction {
-    chainId: string;
-    from: Address;
-    to: Address;
-    value: U256;
-    input: Bytes;
-    gasLimit: U64;
-    nonce: U64;
-    maxFeePerGas: U128;
-    maxPriorityFeePerGas: U128;
-}
-
-export type StatusResponse = ({ status: "PENDING" } & StatusResponsePendingObject) | ({ status: "COMPLETED" } & StatusResponseCompleted) | ({ status: "ERROR" } & StatusResponseError);
-
-export interface StatusResponseError {
-    createdAt: number;
-    error: string;
-}
-
-export interface StatusResponseCompleted {
-    createdAt: number;
-}
-
-export interface StatusResponsePendingObject {
-    createdAt: number;
-    /**
-     * Polling interval in ms for the client
-     */
-    checkIn: number;
-}
-
-export type PrepareDetailedResponseSuccess = { available: UiFields } | { notRequired: PrepareResponseNotRequired };
-
-export type PrepareDetailedResponse = { success: PrepareDetailedResponseSuccess } | { error: PrepareResponseError };
-
-export interface Call {
-    to: Address;
-    value: U256;
-    input: Bytes;
-}
-
 export interface Metadata {
     fundingFrom: FundingMetadata[];
     initialTransaction: InitialTransactionMetadata;
@@ -116,6 +65,74 @@ export type BridgingError = "NO_ROUTES_AVAILABLE" | "INSUFFICIENT_FUNDS" | "INSU
 
 export type PrepareResponse = PrepareResponseSuccess | PrepareResponseError;
 
+export type StatusResponse = ({ status: "PENDING" } & StatusResponsePendingObject) | ({ status: "COMPLETED" } & StatusResponseCompleted) | ({ status: "ERROR" } & StatusResponseError);
+
+export interface StatusResponseError {
+    createdAt: number;
+    error: string;
+}
+
+export interface StatusResponseCompleted {
+    createdAt: number;
+}
+
+export interface StatusResponsePendingObject {
+    createdAt: number;
+    /**
+     * Polling interval in ms for the client
+     */
+    checkIn: number;
+}
+
+export interface PulseMetadata {
+    url: Url | undefined;
+    bundleId: string | undefined;
+    sdkVersion: string;
+    sdkPlatform: string;
+}
+
+export interface Transaction {
+    chainId: string;
+    from: Address;
+    to: Address;
+    value: U256;
+    input: Bytes;
+    gasLimit: U64;
+    nonce: U64;
+}
+
+export interface FeeEstimatedTransaction {
+    chainId: string;
+    from: Address;
+    to: Address;
+    value: U256;
+    input: Bytes;
+    gasLimit: U64;
+    nonce: U64;
+    maxFeePerGas: U128;
+    maxPriorityFeePerGas: U128;
+}
+
+export type PrepareDetailedResponseSuccess = { available: UiFields } | { notRequired: PrepareResponseNotRequired };
+
+export type PrepareDetailedResponse = { success: PrepareDetailedResponseSuccess } | { error: PrepareResponseError };
+
+export interface ExecuteDetails {
+    initialTxnReceipt: TransactionReceipt;
+    initialTxnHash: B256;
+}
+
+export interface Amount {
+    symbol: string;
+    amount: U256;
+    unit: number;
+    formatted: string;
+    /**
+     * Special case that assumes the currency is USD and `unit` is at least 2 decimals
+     */
+    formattedAlt: string;
+}
+
 export type Hex = `0x${string}`;
 export type Address = Hex;
 export type Bytes = Hex;
@@ -126,6 +143,12 @@ export type B256 = Hex;
 export type Url = string;
 export type TransactionReceipt = {};
 
+
+export interface Call {
+    to: Address;
+    value: U256;
+    input: Bytes;
+}
 
 export interface TransactionFee {
     fee: Amount;
@@ -146,30 +169,6 @@ export interface UiFields {
     localBridgeTotal: Amount;
     initial: TxnDetails;
     localTotal: Amount;
-}
-
-export interface PulseMetadata {
-    url: Url | undefined;
-    bundleId: string | undefined;
-    packageName: string | undefined;
-    sdkVersion: string;
-    sdkPlatform: string;
-}
-
-export interface Amount {
-    symbol: string;
-    amount: U256;
-    unit: number;
-    formatted: string;
-    /**
-     * Special case that assumes the currency is USD and `unit` is at least 2 decimals
-     */
-    formattedAlt: string;
-}
-
-export interface ExecuteDetails {
-    initialTxnReceipt: TransactionReceipt;
-    initialTxnHash: B256;
 }
 
 export class Client {
@@ -258,8 +257,8 @@ export interface InitOutput {
   readonly __wbindgen_export_5: WebAssembly.Table;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__heb3f862823f1d1fd: (a: number, b: number) => void;
-  readonly closure777_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure1016_externref_shim: (a: number, b: number, c: any, d: any) => void;
+  readonly closure779_externref_shim: (a: number, b: number, c: any) => void;
+  readonly closure1018_externref_shim: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_start: () => void;
 }
 
