@@ -3,12 +3,15 @@ import { ENV_MAP, getEnvironment } from "@walletconnect/utils";
 import { ChainAbstractionTypes, IChainAbstraction, IWalletKitEngine } from "../types";
 
 import initWasm, {
+  Amount,
   Client,
   Currency,
+  Metadata,
   PrepareDetailedResponse,
   PrepareResponse,
   PrepareResponseAvailable,
   PrepareResponseNotRequired,
+  TransactionFee,
   UiFields,
 } from "./../libs/yttrium";
 
@@ -466,6 +469,46 @@ export class ChainAbstraction extends IChainAbstraction {
               routes = {
                 success: {
                   notRequired: result.v1.v1 as PrepareResponseNotRequired,
+                },
+              };
+            }
+          } else {
+            // Yttrium Swift
+            if ("error" in result) {
+              switch (result.error) {
+                case "insufficientFunds":
+                  throw new Error("INSUFFICIENT_FUNDS");
+                case "noRoutesAvailable":
+                  throw new Error("NO_ROUTES_AVAILABLE");
+                case "insufficientGasFunds":
+                  throw new Error("INSUFFICIENT_GAS_FUNDS");
+              }
+            }
+
+            if ("orchestrationId" in result) {
+              routes = {
+                success: {
+                  available: {
+                    route: result.route,
+                    localRouteTotal: result.localRouteTotal as Amount,
+                    bridge: result.bridge as TransactionFee[],
+                    localBridgeTotal: result.localBridgeTotal as Amount,
+                    routeResponse: {
+                      initialTransaction:
+                        result.initialTransaction as ChainAbstractionTypes.Transaction,
+                      orchestrationId: result.orchestrationId,
+                      transactions: result.transactions as ChainAbstractionTypes.Transaction[],
+                      metadata: result.metadata as Metadata,
+                    },
+                    initial: result.initial,
+                    localTotal: result.localTotal,
+                  },
+                },
+              };
+            } else {
+              routes = {
+                success: {
+                  notRequired: result as PrepareResponseNotRequired,
                 },
               };
             }
