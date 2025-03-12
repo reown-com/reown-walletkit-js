@@ -167,6 +167,7 @@ describe("Sign Integration", () => {
       wallet.pair({ uri: uriString }),
     ]);
 
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     expect(TEST_NAMESPACES).not.toMatchObject(TEST_UPDATED_NAMESPACES);
     // close the transport to simulate peer being offline
     await dapp.core.relayer.transportClose();
