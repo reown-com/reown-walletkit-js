@@ -32,7 +32,6 @@ export declare namespace WalletKitTypes {
   type SessionAuthenticate = SignClientTypes.EventArguments["session_authenticate"];
 
   type SignConfig = SignClientTypes.Options["signConfig"];
-
   interface EventArguments {
     session_proposal: SessionProposal;
     session_request: SessionRequest;
@@ -105,6 +104,31 @@ export abstract class IWalletKit {
   public abstract core: ICore;
   public abstract metadata: WalletKitTypes.Metadata;
   public abstract signConfig?: WalletKitTypes.SignConfig;
+  // chain abstraction //
+  public abstract chainAbstraction: {
+    /**
+     * @experimental
+     * This method is experimental and may change in the future.
+     */
+    prepare: IWalletKitEngine["prepare"];
+    /**
+     * @experimental
+     * This method is experimental and may change in the future.
+     */
+    status: IWalletKitEngine["status"];
+    /**
+     * @experimental
+     * This method is experimental and may change in the future.
+     */
+    getPrepareDetails: IWalletKitEngine["getPrepareDetails"];
+    /**
+     * @experimental
+     * This method is experimental and may change in the future.
+     */
+    execute: IWalletKitEngine["execute"];
+
+    prepareDetailed: IWalletKitEngine["prepareDetailed"];
+  };
 
   constructor(public opts: WalletKitTypes.Options) {}
 
@@ -129,6 +153,14 @@ export abstract class IWalletKit {
   public abstract approveSessionAuthenticate: IWalletKitEngine["approveSessionAuthenticate"];
   public abstract formatAuthMessage: IWalletKitEngine["formatAuthMessage"];
   public abstract rejectSessionAuthenticate: IWalletKitEngine["rejectSessionAuthenticate"];
+
+  // chain abstraction //
+
+  /**
+   * @experimental
+   * This method is experimental and may change in the future.
+   */
+  public abstract getERC20Balance: IWalletKitEngine["getERC20Balance"];
 
   // ---------- Event Handlers ----------------------------------------------- //
   public abstract on: <E extends WalletKitTypes.Event>(

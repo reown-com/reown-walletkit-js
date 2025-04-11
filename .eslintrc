@@ -34,7 +34,7 @@
     "curly": "off",
     "prefer-promise-reject-errors": "off"
   },
-  "ignorePatterns": ["dist", "**/node_modules/*"],
+  "ignorePatterns": ["dist", "**/node_modules/*", "src/libs/yttrium/**"],
   "env": {
     "browser": true,
     "es6": true

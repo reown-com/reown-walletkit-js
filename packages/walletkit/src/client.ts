@@ -14,6 +14,9 @@ export class WalletKit extends IWalletKit {
   public static notifications: WalletKitTypes.INotifications = Notifications;
   public signConfig: IWalletKit["signConfig"];
 
+  // ---------- Chain Abstraction ---------------------- //
+  public chainAbstraction: IWalletKit["chainAbstraction"];
+
   static async init(opts: WalletKitTypes.Options) {
     const client = new WalletKit(opts);
     await client.initialize();
@@ -29,6 +32,13 @@ export class WalletKit extends IWalletKit {
     this.core = opts.core;
     this.logger = this.core.logger;
     this.engine = new Engine(this);
+    this.chainAbstraction = {
+      prepare: this.engine.prepare,
+      status: this.engine.status,
+      getPrepareDetails: this.engine.getPrepareDetails,
+      execute: this.engine.execute,
+      prepareDetailed: this.engine.prepareDetailed,
+    };
   }
 
   // ---------- Events ----------------------------------------------- //
@@ -180,6 +190,17 @@ export class WalletKit extends IWalletKit {
   public formatAuthMessage: IWalletKit["formatAuthMessage"] = (params) => {
     try {
       return this.engine.formatAuthMessage(params);
+    } catch (error: any) {
+      this.logger.error(error.message);
+      throw error;
+    }
+  };
+
+  // ---------- Chain Abstraction ----------------------------------------------- //
+
+  public getERC20Balance: IWalletKit["getERC20Balance"] = async (params) => {
+    try {
+      return await this.engine.getERC20Balance(params);
     } catch (error: any) {
       this.logger.error(error.message);
       throw error;
