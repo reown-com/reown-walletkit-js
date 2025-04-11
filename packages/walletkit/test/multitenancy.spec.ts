@@ -25,7 +25,7 @@ interface IClientInstance {
 }
 
 describe("Multitenancy", () => {
-  // disable global core
+  // enable global core - its disabled in tests by default
   process.env.DISABLE_GLOBAL_CORE = "false";
   // create 5 walletkit clients
   const walletKitClientsToCreate = process.env.WALLETKIT_CLIENTS_TO_CREATE
