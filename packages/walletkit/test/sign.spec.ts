@@ -167,6 +167,7 @@ describe("Sign Integration", () => {
       wallet.pair({ uri: uriString }),
     ]);
 
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     expect(TEST_NAMESPACES).not.toMatchObject(TEST_UPDATED_NAMESPACES);
     // close the transport to simulate peer being offline
     await dapp.core.relayer.transportClose();
@@ -1028,5 +1029,28 @@ describe("Sign Integration", () => {
       await disconnect(walletkit.core);
       await disconnect(dapp.core);
     });
+  });
+
+  it("should send core init event when walletkit initializes", async () => {
+    process.env.IS_VITEST = false as any;
+    const core = new Core({ ...TEST_CORE_OPTIONS, telemetryEnabled: false });
+    let initCalled = false;
+    expect(initCalled).to.be.false;
+    // @ts-expect-error - accessing private properties
+    core.eventClient.sendEvent = async (payload: any) => {
+      initCalled = true;
+      expect(payload).toBeDefined();
+      expect(payload.length).to.eql(1);
+      expect(payload[0].props.event).to.eql("INIT");
+      expect(payload[0].props.properties.client_id).to.eql(await core.crypto.getClientId());
+    };
+    await WalletKit.init({
+      core,
+      name: "wallet",
+      metadata: TEST_METADATA,
+    });
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    expect(initCalled).to.be.true;
+    process.env.IS_VITEST = true as any;
   });
 });
