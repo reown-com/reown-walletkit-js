@@ -36,7 +36,10 @@
     "npm-publish:rc": "lerna exec --no-private -- npm publish --access public --tag rc",
     "npm-publish:latest": "lerna exec --no-private -- npm publish --access public --tag latest",
     "npm-publish:next": "lerna exec --no-private -- npm publish --access public --tag next",
-    "npm-publish:canary": "lerna exec --no-private -- npm publish --access public --tag canary"
+    "npm-publish:canary": "lerna exec --no-private -- npm publish --access public --tag canary",
+    "changeset": "changeset",
+    "changeset:version": "changeset version; npm i",
+    "changeset:publish": "changeset publish"
   },
   "repository": {
     "type": "git",
@@ -46,6 +49,8 @@
     "url": "https://github.com/reown-com/issues"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "0.4.1",
+    "@changesets/cli": "2.28.1",
     "@rollup/plugin-commonjs": "22.0.2",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "13.3.0",
