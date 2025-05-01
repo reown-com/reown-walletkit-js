@@ -1,0 +1,49 @@
+name: Publish Canary to NPM
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to release from"
+        required: true
+        default: "main"
+      canaryVersion:
+        description: "Custom version (e.g., 1.2.3-canary.42)"
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Validate canary version format 🔍
+        run: |
+          VERSION="${{ github.event.inputs.canaryVersion }}"
+          if [[ ! "$VERSION" =~ -canary- ]]; then
+            echo "❌ Invalid version: '$VERSION'. It must include '-canary-'."
+            exit 1
+          fi
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies and build 🔧
+        run: npm ci && npm run build
+
+      - name: Set version using Lerna 📦
+        run: npx lerna version ${{ github.event.inputs.canaryVersion }} --no-push --no-git-tag-version --yes
+
+      - name: Rebuild after version change 🔁
+        run: npm run build
+
+      - name: Publish canary on NPM 🚀
+        run: npm run npm-publish:canary
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

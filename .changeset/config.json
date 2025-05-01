@@ -1,0 +1,13 @@
+{
+  "changelog": ["@changesets/changelog-github", { "repo": "reown-com/reown-walletkit-js" }],
+  "commit": false,
+  "fixed": [
+    [
+      "@reown/walletkit"
+    ]
+  ],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch"
+}
