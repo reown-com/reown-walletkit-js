@@ -91,9 +91,9 @@ function logError(f, args) {
     }
 }
 
-const cachedTextDecoder = () => {
-    return { decode: (args) => { console.error("TextDecoder", args); } };
-};
+const cachedTextDecoder = (typeof TextDecoder !== "undefined" ? new TextDecoder("utf-8", { ignoreBOM: true, fatal: true }) : { decode: () => { throw Error("TextDecoder not available"); } });
+
+if (typeof TextDecoder !== "undefined") { cachedTextDecoder.decode(); }
 
 function getStringFromWasm0(ptr, len) {
     ptr = ptr >>> 0;
