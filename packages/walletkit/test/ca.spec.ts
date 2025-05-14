@@ -49,7 +49,7 @@ describe("Chain Abstraction", () => {
     expect(wallet.engine.signClient.signConfig).to.toMatchObject(signConfig);
   });
 
-  it.only("should get routes detailed", async () => {
+  it("should get routes detailed", async () => {
     const testTxData: ChainAbstractionTypes.Transaction = {
       chainId: "eip155:10",
       from: "0x13a2ff792037aa2cd77fe1f4b522921ac59a9c52",
