@@ -76,7 +76,7 @@ describe("Sign Integration", () => {
             namespaces: TEST_NAMESPACES,
             sessionConfig,
           });
-          expect(params.requiredNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
+          expect(params.optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
           resolve(session);
         });
       }),
@@ -95,7 +95,7 @@ describe("Sign Integration", () => {
       new Promise<void>((resolve) => {
         wallet.on("session_proposal", async (sessionProposal) => {
           const { params } = sessionProposal;
-          expect(params.requiredNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
+          expect(params.optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
           await wallet.rejectSession({
             id: params.id,
             reason: rejectionError,
@@ -126,7 +126,7 @@ describe("Sign Integration", () => {
             id,
             namespaces: TEST_NAMESPACES,
           });
-          expect(params.requiredNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
+          expect(params.optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
           resolve(session);
         });
       }),
@@ -159,7 +159,7 @@ describe("Sign Integration", () => {
             id,
             namespaces: TEST_NAMESPACES,
           });
-          expect(params.requiredNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
+          expect(params.optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
           resolve(session);
         });
       }),
@@ -241,7 +241,7 @@ describe("Sign Integration", () => {
             id,
             namespaces: TEST_NAMESPACES,
           });
-          expect(params.requiredNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
+          expect(params.optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
           resolve(session);
         });
       }),
@@ -275,7 +275,7 @@ describe("Sign Integration", () => {
               },
             },
           });
-          expect(params.requiredNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
+          expect(params.optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
           resolve(session);
         });
       }),
@@ -338,7 +338,7 @@ describe("Sign Integration", () => {
               },
             },
           });
-          expect(params.requiredNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
+          expect(params.optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
           resolve(session);
         });
       }),
@@ -374,7 +374,7 @@ describe("Sign Integration", () => {
               },
             },
           });
-          expect(params.requiredNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
+          expect(params.optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
           resolve(session);
         });
       }),
@@ -410,7 +410,7 @@ describe("Sign Integration", () => {
               },
             },
           });
-          expect(params.requiredNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
+          expect(params.optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
           resolve(session);
         });
       }),
@@ -452,7 +452,7 @@ describe("Sign Integration", () => {
               },
             },
           });
-          expect(params.requiredNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
+          expect(params.optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
           resolve(session);
         });
       }),
@@ -493,7 +493,7 @@ describe("Sign Integration", () => {
           const proposals = wallet.getPendingSessionProposals();
           expect(proposals).to.be.exist;
           expect(Object.values(proposals).length).to.be.eq(1);
-          expect(proposals[0].requiredNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
+          expect(proposals[0].optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
           resolve();
         });
       }),
@@ -551,7 +551,7 @@ describe("Sign Integration", () => {
               },
             },
           });
-          expect(params.requiredNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
+          expect(params.optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
           resolve(session);
         });
       }),
