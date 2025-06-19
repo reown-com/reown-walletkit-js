@@ -1,6 +1,5 @@
 {
-  "name": "reown-js",
-  "description": "Monorepo for reown",
+  "description": "Monorepo for Reown WalletKit",
   "private": true,
   "keywords": [
     "wallet",
