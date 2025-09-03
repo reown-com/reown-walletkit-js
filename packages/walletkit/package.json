@@ -5,7 +5,7 @@
   "private": false,
   "author": "Reown, Inc.",
   "homepage": "https://github.com/reown-com/",
-  "license": "Apache-2.0",
+  "license": "WalletConnect Community License Agreement",
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "unpkg": "dist/index.umd.js",
