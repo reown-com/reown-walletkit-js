@@ -28,6 +28,7 @@ jobs:
           name: build-artifacts
           path: |
             packages/walletkit/dist
+            packages/pos-client/dist
 
   code_style:
     runs-on: ubuntu-latest
@@ -57,6 +58,7 @@ jobs:
       matrix:
         test-prefix:
           - packages/walletkit
+          - packages/pos-client
     env:
       TEST_RELAY_URL: ${{ secrets.TEST_RELAY_URL }}
       TEST_PROJECT_ID: ${{ secrets.TEST_PROJECT_ID }}

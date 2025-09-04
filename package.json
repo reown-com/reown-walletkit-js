@@ -19,7 +19,8 @@
   "homepage": "https://github.com/reown-com/",
   "license": "Apache-2.0",
   "workspaces": [
-    "packages/walletkit"
+    "packages/walletkit",
+    "packages/pos-client"
   ],
   "scripts": {
     "clean": "npm run clean --workspaces --if-present",
