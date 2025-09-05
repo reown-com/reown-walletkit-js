@@ -17,7 +17,7 @@
   ],
   "author": "Reown, Inc.",
   "homepage": "https://github.com/reown-com/",
-  "license": "WalletConnect Community License Agreement",
+  "license": "SEE LICENSE IN LICENSE.md",
   "workspaces": [
     "packages/walletkit"
   ],
