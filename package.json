@@ -17,7 +17,7 @@
   ],
   "author": "Reown, Inc.",
   "homepage": "https://github.com/reown-com/",
-  "license": "Apache-2.0",
+  "license": "SEE LICENSE IN LICENSE.md",
   "workspaces": [
     "packages/walletkit"
   ],
