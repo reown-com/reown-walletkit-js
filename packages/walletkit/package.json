@@ -48,6 +48,6 @@
     "directory": "packages/walletkit"
   },
   "publishConfig": {
-    "provenance": "true"
+    "provenance": true
   }
 }
