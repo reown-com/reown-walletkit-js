@@ -41,5 +41,13 @@
   },
   "devDependencies": {
     "@ethersproject/wallet": "5.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reown-com/reown-walletkit-js.git",
+    "directory": "packages/walletkit"
+  },
+  "publishConfig": {
+    "provenance": true
   }
 }
