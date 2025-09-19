@@ -1,5 +1,13 @@
 # @reown/walletkit
 
+## 1.2.11
+
+### Patch Changes
+
+- [#41](https://github.com/reown-com/reown-walletkit-js/pull/41) [`754dcdced4bf95cee2c599ce3c500fb870fadf88`](https://github.com/reown-com/reown-walletkit-js/commit/754dcdced4bf95cee2c599ce3c500fb870fadf88) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - Updated `@walletconnect` deps to `2.21.9`
+
+- [#34](https://github.com/reown-com/reown-walletkit-js/pull/34) [`9d20faff80b2d51626f8429338fa65e3fbb6eee3`](https://github.com/reown-com/reown-walletkit-js/commit/9d20faff80b2d51626f8429338fa65e3fbb6eee3) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - Updated the `license` of the `reown-walletkit-js` repository
+
 ## 1.2.10
 
 ### Patch Changes
