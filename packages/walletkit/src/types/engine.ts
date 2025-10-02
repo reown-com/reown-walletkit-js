@@ -27,6 +27,7 @@ export abstract class IWalletKitEngine {
     sessionProperties?: ProposalTypes.SessionProperties;
     sessionConfig?: SessionTypes.SessionConfig;
     relayProtocol?: string;
+    proposalRequestsResponses?: AuthTypes.Cacao[];
   }): Promise<SessionTypes.Struct>;
 
   // reject a session proposal (SIGN)

@@ -31,13 +31,13 @@
     "prettier": "prettier --check '{src,test}/**/*.{js,ts,jsx,tsx}'"
   },
   "dependencies": {
-    "@walletconnect/core": "2.21.9",
+    "@walletconnect/core": "2.21.10-canary-a-0",
     "@walletconnect/jsonrpc-provider": "1.0.14",
     "@walletconnect/jsonrpc-utils": "1.0.8",
     "@walletconnect/logger": "2.1.2",
-    "@walletconnect/sign-client": "2.21.9",
-    "@walletconnect/types": "2.21.9",
-    "@walletconnect/utils": "2.21.9"
+    "@walletconnect/sign-client": "2.21.10-canary-a-0",
+    "@walletconnect/types": "2.21.10-canary-a-0",
+    "@walletconnect/utils": "2.21.10-canary-a-0"
   },
   "devDependencies": {
     "@ethersproject/wallet": "5.7.0"
