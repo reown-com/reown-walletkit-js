@@ -34,6 +34,7 @@ export class Engine extends IWalletKitEngine {
       namespaces: sessionProposal.namespaces,
       sessionProperties: sessionProposal.sessionProperties,
       sessionConfig: sessionProposal.sessionConfig,
+      proposalRequestsResponses: sessionProposal?.proposalRequestsResponses,
     });
     await acknowledged();
     return this.signClient.session.get(topic);
