@@ -6,6 +6,7 @@ import {
   SessionTypes,
   EchoClientTypes,
   AuthTypes,
+  EngineTypes,
 } from "@walletconnect/types";
 import { IWalletKit, WalletKitTypes } from "./client";
 import EventEmitter from "events";
@@ -27,7 +28,7 @@ export abstract class IWalletKitEngine {
     sessionProperties?: ProposalTypes.SessionProperties;
     sessionConfig?: SessionTypes.SessionConfig;
     relayProtocol?: string;
-    proposalRequestsResponses?: AuthTypes.Cacao[];
+    proposalRequestsResponses?: EngineTypes.ApproveParams["proposalRequestsResponses"];
   }): Promise<SessionTypes.Struct>;
 
   // reject a session proposal (SIGN)
