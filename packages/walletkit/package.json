@@ -10,7 +10,6 @@
   "module": "dist/index.js",
   "unpkg": "dist/index.umd.js",
   "types": "dist/types/index.d.ts",
-  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
