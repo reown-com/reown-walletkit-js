@@ -1,3 +1,4 @@
+import EventEmitter from "events";
 import { ErrorResponse, JsonRpcResponse } from "@walletconnect/jsonrpc-utils";
 import {
   ISignClient,
@@ -7,8 +8,7 @@ import {
   EchoClientTypes,
   AuthTypes,
 } from "@walletconnect/types";
-import { IWalletKit, WalletKitTypes } from "./client";
-import EventEmitter from "events";
+import { IWalletKit, WalletKitTypes } from "./client.js";
 
 export abstract class IWalletKitEngine {
   public abstract signClient: ISignClient;

@@ -1,8 +1,8 @@
 import EventEmmiter, { EventEmitter } from "events";
 import { ICore, CoreTypes, SignClientTypes } from "@walletconnect/types";
-import { IWalletKitEngine } from "./engine";
 import { Logger } from "@walletconnect/logger";
 import { JsonRpcPayload } from "@walletconnect/jsonrpc-utils";
+import { IWalletKitEngine } from "./engine.js";
 
 export declare namespace WalletKitTypes {
   type Event =

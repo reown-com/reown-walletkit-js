@@ -1,6 +1,6 @@
 import { Core } from "@walletconnect/core";
-import { WalletKitTypes } from "../types";
 import { SessionStore } from "@walletconnect/sign-client";
+import { WalletKitTypes } from "../types/index.js";
 
 export const Notifications: WalletKitTypes.INotifications = {
   decryptMessage: async (params) => {
