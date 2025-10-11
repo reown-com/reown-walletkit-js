@@ -1,8 +1,8 @@
 import EventEmitter from "events";
-import { CLIENT_CONTEXT } from "./constants";
-import { Engine } from "./controllers";
-import { IWalletKit, WalletKitTypes } from "./types";
-import { Notifications } from "./utils";
+import { CLIENT_CONTEXT } from "./constants/index.js";
+import { Engine } from "./controllers/index.js";
+import { IWalletKit, WalletKitTypes } from "./types/index.js";
+import { Notifications } from "./utils/index.js";
 
 export class WalletKit extends IWalletKit {
   public name: IWalletKit["name"];

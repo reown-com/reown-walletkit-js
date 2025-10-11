@@ -1,6 +1,6 @@
 import { SignClient } from "@walletconnect/sign-client";
 import { ISignClient, SessionTypes } from "@walletconnect/types";
-import { IWalletKitEngine, WalletKitTypes } from "../types";
+import { IWalletKitEngine, WalletKitTypes } from "../types/index.js";
 
 export class Engine extends IWalletKitEngine {
   public signClient: ISignClient;

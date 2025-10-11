@@ -32,7 +32,8 @@
     "no-useless-constructor": "off",
     "no-use-before-define": "off",
     "curly": "off",
-    "prefer-promise-reject-errors": "off"
+    "prefer-promise-reject-errors": "off",
+    "import/extensions": ["error", "ignorePackages"]
   },
   "ignorePatterns": ["dist", "**/node_modules/*"],
   "env": {
