@@ -43,7 +43,7 @@ export default function createConfig(
       external: packageDependencies,
       output: [
         {
-          file: "./dist/index.cjs.js",
+          file: "./dist/index.cjs",
           format: "cjs",
           exports: "named",
           name: packageName,
@@ -51,7 +51,7 @@ export default function createConfig(
           ...cjs,
         },
         {
-          file: "./dist/index.es.js",
+          file: "./dist/index.js",
           format: "es",
           exports: "named",
           name: packageName,
