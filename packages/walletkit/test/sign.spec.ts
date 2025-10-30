@@ -192,6 +192,7 @@ describe("Sign Integration", () => {
           },
         },
       });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       await wallet.emitSessionEvent({
         topic: session.topic,
         event: {
