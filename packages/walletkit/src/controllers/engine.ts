@@ -33,6 +33,7 @@ export class Engine extends IWalletKitEngine {
       id: sessionProposal.id,
       namespaces: sessionProposal.namespaces,
       sessionProperties: sessionProposal.sessionProperties,
+      scopedProperties: sessionProposal.scopedProperties,
       sessionConfig: sessionProposal.sessionConfig,
       proposalRequestsResponses: sessionProposal?.proposalRequestsResponses,
     });

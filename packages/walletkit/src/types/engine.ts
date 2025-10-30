@@ -26,6 +26,7 @@ export abstract class IWalletKitEngine {
     id: number;
     namespaces: Record<string, SessionTypes.Namespace>;
     sessionProperties?: ProposalTypes.SessionProperties;
+    scopedProperties?: ProposalTypes.ScopedProperties;
     sessionConfig?: SessionTypes.SessionConfig;
     relayProtocol?: string;
     proposalRequestsResponses?: EngineTypes.ApproveParams["proposalRequestsResponses"];
