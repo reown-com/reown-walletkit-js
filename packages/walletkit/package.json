@@ -34,7 +34,7 @@
     "build:types": "tsc",
     "build:source": "rollup --config rollup.config.js",
     "build": "npm run lint; npm run build:pre; npm run build:source; npm run build:types",
-    "test": " rm -rf test/tmp && vitest run --dir test --no-threads",
+    "test": " rm -rf test/tmp && vitest run --dir test",
     "lint": "eslint -c '../../.eslintrc' --fix './src/**/*.ts'",
     "prettier": "prettier --check '{src,test}/**/*.{js,ts,jsx,tsx}'"
   },

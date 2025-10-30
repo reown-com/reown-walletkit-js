@@ -1062,7 +1062,7 @@ describe("Sign Integration", () => {
     process.env.IS_VITEST = true as any;
   });
 
-  describe("1CA", () => {
+  describe.concurrent("1CA", () => {
     const approveAuthentication = async (
       event: WalletKitTypes.EventArguments["session_proposal"],
     ) => {
@@ -1135,7 +1135,9 @@ describe("Sign Integration", () => {
               id,
               namespaces: TEST_NAMESPACES,
               sessionConfig,
-              proposalRequestsResponses: auths,
+              proposalRequestsResponses: {
+                authentication: auths,
+              },
             });
             expect(params.optionalNamespaces).to.toMatchObject(TEST_REQUIRED_NAMESPACES);
             resolve(session);
