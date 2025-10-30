@@ -1,5 +1,11 @@
 # @reown/walletkit
 
+## 1.4.1
+
+### Patch Changes
+
+- [#47](https://github.com/reown-com/reown-walletkit-js/pull/47) [`9e2237bea9f91bc73070d863943e3bc4c382772b`](https://github.com/reown-com/reown-walletkit-js/commit/9e2237bea9f91bc73070d863943e3bc4c382772b) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - Added `scopedProperties` type and param to `approveSession`
+
 ## 1.4.0
 
 ### Minor Changes

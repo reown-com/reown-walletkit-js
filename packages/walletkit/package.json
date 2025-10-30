@@ -1,7 +1,7 @@
 {
   "name": "@reown/walletkit",
   "description": "WalletKit for WalletConnect Protocol",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "private": false,
   "author": "Reown, Inc.",
   "homepage": "https://github.com/reown-com/",
