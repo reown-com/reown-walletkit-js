@@ -179,6 +179,8 @@ describe("Sign Integration", () => {
     await dapp.core.relayer.transportClose();
     const updatedChain = "eip155:55";
     const updatedAddress = `${updatedChain}:${cryptoWallet.address}`;
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     // update the session
     await new Promise<void>(async (resolve) => {
       await wallet.updateSession({
@@ -208,7 +210,6 @@ describe("Sign Integration", () => {
       });
       resolve();
     });
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     await Promise.all([
       new Promise((resolve) => {
         dapp.events.on("session_update", (session) => {
