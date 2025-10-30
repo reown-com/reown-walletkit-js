@@ -1,5 +1,13 @@
 # @reown/walletkit
 
+## 1.4.0
+
+### Minor Changes
+
+- [#42](https://github.com/reown-com/reown-walletkit-js/pull/42) [`aadfca8ff36948c0350def2a1fa968eca23faec6`](https://github.com/reown-com/reown-walletkit-js/commit/aadfca8ff36948c0350def2a1fa968eca23faec6) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - Updated `@walletconnect` deps to `2.23.0`
+
+- [#42](https://github.com/reown-com/reown-walletkit-js/pull/42) [`aadfca8ff36948c0350def2a1fa968eca23faec6`](https://github.com/reown-com/reown-walletkit-js/commit/aadfca8ff36948c0350def2a1fa968eca23faec6) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - Implemented new 1 Click Auth
+
 ## 1.3.0
 
 ### Minor Changes
