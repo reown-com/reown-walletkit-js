@@ -174,8 +174,6 @@ describe("Sign Integration", () => {
       sessionApproval(),
       wallet.pair({ uri: uriString }),
     ]);
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
     expect(TEST_NAMESPACES).not.toMatchObject(TEST_UPDATED_NAMESPACES);
     // close the transport to simulate peer being offline
     await dapp.core.relayer.transportClose();
@@ -192,7 +190,6 @@ describe("Sign Integration", () => {
           },
         },
       });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       await wallet.emitSessionEvent({
         topic: session.topic,
         event: {
@@ -211,6 +208,7 @@ describe("Sign Integration", () => {
       });
       resolve();
     });
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     await Promise.all([
       new Promise((resolve) => {
         dapp.events.on("session_update", (session) => {
