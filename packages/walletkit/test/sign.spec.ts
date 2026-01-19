@@ -9,7 +9,7 @@ import { SignClient, ENGINE_RPC_OPTS } from "@walletconnect/sign-client";
 import { AuthTypes, CoreTypes, ICore, ISignClient, SessionTypes } from "@walletconnect/types";
 import { buildApprovedNamespaces, buildAuthObject, getSdkError } from "@walletconnect/utils";
 import { toMiliseconds } from "@walletconnect/time";
-import { Wallet as CryptoWallet } from "@ethersproject/wallet";
+import { HDNodeWallet, Wallet } from "ethers";
 
 import { expect, describe, it, beforeEach, vi, beforeAll, afterEach } from "vitest";
 import { WalletKit, IWalletKit, WalletKitTypes } from "../src";
@@ -20,6 +20,7 @@ import {
   TEST_NAMESPACES,
   TEST_REQUIRED_NAMESPACES,
   TEST_UPDATED_NAMESPACES,
+  TEST_ACCOUNTS,
 } from "./shared";
 
 describe("Sign Integration", () => {
@@ -29,10 +30,10 @@ describe("Sign Integration", () => {
   let uriString: string;
   let sessionApproval: () => Promise<any>;
   let session: SessionTypes.Struct;
-  let cryptoWallet: CryptoWallet;
+  let cryptoWallet: HDNodeWallet;
 
   beforeAll(() => {
-    cryptoWallet = CryptoWallet.createRandom();
+    cryptoWallet = Wallet.createRandom();
   });
 
   afterEach(async () => {
@@ -177,42 +178,35 @@ describe("Sign Integration", () => {
     expect(TEST_NAMESPACES).not.toMatchObject(TEST_UPDATED_NAMESPACES);
     // close the transport to simulate peer being offline
     await dapp.core.relayer.transportClose();
-    const updatedChain = "eip155:55";
-    const updatedAddress = `${updatedChain}:${cryptoWallet.address}`;
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    // update the session
-    await new Promise<void>(async (resolve) => {
-      await wallet.updateSession({
-        topic: session.topic,
-        namespaces: {
-          eip155: {
-            ...TEST_UPDATED_NAMESPACES.eip155,
-            accounts: [...TEST_UPDATED_NAMESPACES.eip155.accounts, updatedAddress],
-          },
-        },
-      });
-      await wallet.emitSessionEvent({
-        topic: session.topic,
-        event: {
-          name: "chainChanged",
-          data: updatedChain,
-        },
-        chainId: updatedChain,
-      });
-      await wallet.emitSessionEvent({
-        topic: session.topic,
-        event: {
-          name: "accountsChanged",
-          data: [updatedAddress],
-        },
-        chainId: updatedChain,
-      });
-      resolve();
+    // update the session while peer is offline
+    await wallet.updateSession({
+      topic: session.topic,
+      namespaces: TEST_UPDATED_NAMESPACES,
+    });
+    // emit session events using approved accounts (validation requires confirmed session data)
+    await wallet.emitSessionEvent({
+      topic: session.topic,
+      event: {
+        name: "chainChanged",
+        data: TEST_ETHEREUM_CHAIN,
+      },
+      chainId: TEST_ETHEREUM_CHAIN,
+    });
+    await wallet.emitSessionEvent({
+      topic: session.topic,
+      event: {
+        name: "accountsChanged",
+        data: TEST_ACCOUNTS,
+      },
+      chainId: TEST_ETHEREUM_CHAIN,
     });
     await Promise.all([
       new Promise((resolve) => {
         dapp.events.on("session_update", (session) => {
+          const { params } = session;
+          expect(params.namespaces).to.toMatchObject(TEST_UPDATED_NAMESPACES);
           resolve(session);
         });
       }),
@@ -220,7 +214,7 @@ describe("Sign Integration", () => {
         dapp.events.on("session_event", (event) => {
           const { params } = event;
           if (params.event.name === "chainChanged") {
-            expect(params.event.data).to.equal(updatedChain);
+            expect(params.event.data).to.equal(TEST_ETHEREUM_CHAIN);
             resolve(event);
           }
         });
@@ -229,8 +223,7 @@ describe("Sign Integration", () => {
         dapp.events.on("session_event", (event) => {
           const { params } = event;
           if (params.event.name === "accountsChanged") {
-            console;
-            expect(params.event.data[0]).to.equal(updatedAddress);
+            expect(params.event.data).to.toMatchObject(TEST_ACCOUNTS);
             resolve(event);
           }
         });
