@@ -187,19 +187,18 @@ describe("Sign Integration", () => {
       namespaces: {
         eip155: {
           ...TEST_UPDATED_NAMESPACES.eip155,
-          chains: [TEST_ETHEREUM_CHAIN, updatedChain],
           accounts: [...TEST_UPDATED_NAMESPACES.eip155.accounts, updatedAddress],
         },
       },
     });
-    // emit session events after the session is updated
+    // emit session events on an existing approved chain (new chain isn't confirmed yet while peer is offline)
     await wallet.emitSessionEvent({
       topic: session.topic,
       event: {
         name: "chainChanged",
         data: updatedChain,
       },
-      chainId: updatedChain,
+      chainId: TEST_ETHEREUM_CHAIN,
     });
     await wallet.emitSessionEvent({
       topic: session.topic,
@@ -207,7 +206,7 @@ describe("Sign Integration", () => {
         name: "accountsChanged",
         data: [updatedAddress],
       },
-      chainId: updatedChain,
+      chainId: TEST_ETHEREUM_CHAIN,
     });
     await Promise.all([
       new Promise((resolve) => {
