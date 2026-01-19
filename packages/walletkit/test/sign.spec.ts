@@ -181,34 +181,33 @@ describe("Sign Integration", () => {
     const updatedAddress = `${updatedChain}:${cryptoWallet.address}`;
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    // update the session
-    await new Promise<void>(async (resolve) => {
-      await wallet.updateSession({
-        topic: session.topic,
-        namespaces: {
-          eip155: {
-            ...TEST_UPDATED_NAMESPACES.eip155,
-            accounts: [...TEST_UPDATED_NAMESPACES.eip155.accounts, updatedAddress],
-          },
+    // update the session with the new chain included
+    await wallet.updateSession({
+      topic: session.topic,
+      namespaces: {
+        eip155: {
+          ...TEST_UPDATED_NAMESPACES.eip155,
+          chains: [TEST_ETHEREUM_CHAIN, updatedChain],
+          accounts: [...TEST_UPDATED_NAMESPACES.eip155.accounts, updatedAddress],
         },
-      });
-      await wallet.emitSessionEvent({
-        topic: session.topic,
-        event: {
-          name: "chainChanged",
-          data: updatedChain,
-        },
-        chainId: updatedChain,
-      });
-      await wallet.emitSessionEvent({
-        topic: session.topic,
-        event: {
-          name: "accountsChanged",
-          data: [updatedAddress],
-        },
-        chainId: updatedChain,
-      });
-      resolve();
+      },
+    });
+    // emit session events after the session is updated
+    await wallet.emitSessionEvent({
+      topic: session.topic,
+      event: {
+        name: "chainChanged",
+        data: updatedChain,
+      },
+      chainId: updatedChain,
+    });
+    await wallet.emitSessionEvent({
+      topic: session.topic,
+      event: {
+        name: "accountsChanged",
+        data: [updatedAddress],
+      },
+      chainId: updatedChain,
     });
     await Promise.all([
       new Promise((resolve) => {
