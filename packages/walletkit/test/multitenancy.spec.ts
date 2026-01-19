@@ -5,7 +5,7 @@ import { SignClient } from "@walletconnect/sign-client";
 import { ICore, ISignClient, SessionTypes } from "@walletconnect/types";
 import { parseUri } from "@walletconnect/utils";
 import { KeyValueStorage } from "@walletconnect/keyvaluestorage";
-import { Wallet as CryptoWallet } from "@ethersproject/wallet";
+import { HDNodeWallet, Wallet } from "ethers";
 
 import { expect, describe, it, beforeAll } from "vitest";
 import { WalletKit, IWalletKit } from "../src";
@@ -20,7 +20,7 @@ interface IClientInstance {
   clientId: number;
   core: ICore;
   wallet: IWalletKit;
-  cryptoWallet: CryptoWallet;
+  cryptoWallet: HDNodeWallet;
   sessionTopic: string;
 }
 
@@ -103,7 +103,7 @@ describe("Multitenancy", () => {
       clientId: id,
       wallet,
       core: wallet.core,
-      cryptoWallet: CryptoWallet.createRandom(),
+      cryptoWallet: Wallet.createRandom(),
       sessionTopic: "", // will be set after session is approved or after restarting the wallet
     };
     return clientInstance;

@@ -9,7 +9,7 @@ import { SignClient, ENGINE_RPC_OPTS } from "@walletconnect/sign-client";
 import { AuthTypes, CoreTypes, ICore, ISignClient, SessionTypes } from "@walletconnect/types";
 import { buildApprovedNamespaces, buildAuthObject, getSdkError } from "@walletconnect/utils";
 import { toMiliseconds } from "@walletconnect/time";
-import { Wallet as CryptoWallet } from "@ethersproject/wallet";
+import { HDNodeWallet, Wallet } from "ethers";
 
 import { expect, describe, it, beforeEach, vi, beforeAll, afterEach } from "vitest";
 import { WalletKit, IWalletKit, WalletKitTypes } from "../src";
@@ -29,10 +29,10 @@ describe("Sign Integration", () => {
   let uriString: string;
   let sessionApproval: () => Promise<any>;
   let session: SessionTypes.Struct;
-  let cryptoWallet: CryptoWallet;
+  let cryptoWallet: HDNodeWallet;
 
   beforeAll(() => {
-    cryptoWallet = CryptoWallet.createRandom();
+    cryptoWallet = Wallet.createRandom();
   });
 
   afterEach(async () => {
