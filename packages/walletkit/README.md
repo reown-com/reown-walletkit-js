@@ -108,3 +108,64 @@ walletkit.on("session_proposal", handler);
 walletkit.on("session_request", handler);
 walletkit.on("session_delete", handler);
 ```
+
+### WalletConnect Pay
+
+WalletKit includes built-in support for WalletConnect Pay, enabling wallets to handle payment requests.
+
+1. Detecting Payment Links
+
+```javascript
+import { isPaymentLink } from "@reown/walletkit";
+
+// Use when handling a scanned QR code or deep link
+if (isPaymentLink(uri)) {
+  // Handle as payment (see below)
+} else {
+  // Handle as WalletConnect pairing
+  await walletkit.pair({ uri });
+}
+```
+
+2. Getting Payment Options
+
+```javascript
+const options = await walletkit.pay.getPaymentOptions({
+  paymentLink: "https://pay.walletconnect.com/...",
+  accounts: ["eip155:1:0x...", "eip155:8453:0x..."],
+  includePaymentInfo: true,
+});
+
+// options.paymentId - unique payment identifier
+// options.options - array of payment options (different tokens/chains)
+// options.info - payment details (amount, merchant, expiry)
+```
+
+3. Getting Required Actions
+
+```javascript
+const actions = await walletkit.pay.getRequiredPaymentActions({
+  paymentId: options.paymentId,
+  optionId: options.options[0].id,
+});
+
+// actions - array of wallet RPC calls to sign
+// Each action contains: { walletRpc: { chainId, method, params } }
+```
+
+4. Confirming Payment
+
+```javascript
+// Sign the required actions and collect signatures
+const signatures = await signActions(actions);
+
+const result = await walletkit.pay.confirmPayment({
+  paymentId: options.paymentId,
+  optionId: options.options[0].id,
+  signatures,
+});
+
+// result.status - "succeeded" | "processing" | "failed" | "expired"
+// result.isFinal - whether the payment is complete
+// result.pollInMs - if not final, poll again after this delay
+```
