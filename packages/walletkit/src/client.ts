@@ -1,7 +1,8 @@
 import EventEmitter from "events";
+import { WalletConnectPay } from "@walletconnect/pay";
 import { CLIENT_CONTEXT } from "./constants/index.js";
 import { Engine } from "./controllers/index.js";
-import { IWalletKit, WalletKitTypes } from "./types/index.js";
+import { IWalletKit, WalletKitTypes, IWalletKitPay } from "./types/index.js";
 import { Notifications } from "./utils/index.js";
 
 export class WalletKit extends IWalletKit {
@@ -13,6 +14,7 @@ export class WalletKit extends IWalletKit {
   public metadata: IWalletKit["metadata"];
   public static notifications: WalletKitTypes.INotifications = Notifications;
   public signConfig: IWalletKit["signConfig"];
+  public pay: IWalletKitPay;
 
   static async init(opts: WalletKitTypes.Options) {
     const client = new WalletKit(opts);
@@ -29,6 +31,8 @@ export class WalletKit extends IWalletKit {
     this.core = opts.core;
     this.logger = this.core.logger;
     this.engine = new Engine(this);
+    // initialized in initialize()
+    this.pay = {} as IWalletKitPay;
   }
 
   // ---------- Events ----------------------------------------------- //
@@ -192,6 +196,11 @@ export class WalletKit extends IWalletKit {
     this.logger.trace(`Initialized`);
     try {
       await this.engine.init();
+      this.pay = new WalletConnectPay({
+        clientId: await this.core.crypto.getClientId(),
+        appId: this.core.projectId,
+        ...(this.opts.payConfig || {}),
+      });
       this.logger.info(`WalletKit Initialization Success`);
     } catch (error: any) {
       this.logger.info(`WalletKit Initialization Failure`);
