@@ -197,7 +197,6 @@ export class WalletKit extends IWalletKit {
     try {
       await this.engine.init();
       if (WalletConnectPay.isAvailable()) {
-        // wcp will throw an error if a provider is not available for the current platform
         this.pay = new WalletConnectPay({
           clientId: await this.core.crypto.getClientId(),
           appId: this.core.projectId,

@@ -1,7 +1,7 @@
 import { Core } from "@walletconnect/core";
 import { setNativeModule, resetNativeModule } from "@walletconnect/pay";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { WalletKit, IWalletKit } from "../src";
+import { WalletKit, IWalletKit, isPaymentLink } from "../src";
 import {
   TEST_CORE_OPTIONS,
   TEST_METADATA,
@@ -243,5 +243,31 @@ describe("Pay Integration", () => {
       expect(mockModule.calls.getRequiredPaymentActions).toHaveLength(1);
       expect(mockModule.calls.confirmPayment).toHaveLength(1);
     });
+  });
+});
+
+describe("isPaymentLink", () => {
+  it("should return true for pay.walletconnect.com links", () => {
+    expect(isPaymentLink("https://pay.walletconnect.com/pay_123")).toBe(true);
+  });
+
+  it("should return true for links with pay= parameter", () => {
+    expect(isPaymentLink("https://wcp.me?pay=123")).toBe(true);
+  });
+
+  it("should return true for links with pay_ prefix", () => {
+    expect(isPaymentLink("https://walletconnect.com/pay_abc123")).toBe(true);
+  });
+
+  it("should return true for URL encoded pay links", () => {
+    expect(isPaymentLink("https://walletconnect.com%2epay%2ewalletconnect")).toBe(true);
+  });
+
+  it("should return false for regular WalletConnect URIs", () => {
+    expect(isPaymentLink("wc:abc123@2?relay-protocol=irn")).toBe(false);
+  });
+
+  it("should return false for non-payment links", () => {
+    expect(isPaymentLink("https://walletconnect.com")).toBe(false);
   });
 });
