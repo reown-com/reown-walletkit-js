@@ -24,7 +24,6 @@ describe("Pay Integration", () => {
 
     const core = new Core({
       ...TEST_CORE_OPTIONS,
-      customStoragePrefix: Math.random().toString(36).substring(2, 15),
     });
 
     wallet = await WalletKit.init({

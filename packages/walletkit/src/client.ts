@@ -196,11 +196,16 @@ export class WalletKit extends IWalletKit {
     this.logger.trace(`Initialized`);
     try {
       await this.engine.init();
-      this.pay = new WalletConnectPay({
-        clientId: await this.core.crypto.getClientId(),
-        appId: this.core.projectId,
-        ...(this.opts.payConfig || {}),
-      });
+      try {
+        // wcp will throw an error if a provider is not available for the current platform
+        this.pay = new WalletConnectPay({
+          clientId: await this.core.crypto.getClientId(),
+          appId: this.core.projectId,
+          ...(this.opts.payConfig || {}),
+        });
+      } catch (error: any) {
+        this.logger.warn(error.message);
+      }
       this.logger.info(`WalletKit Initialization Success`);
     } catch (error: any) {
       this.logger.info(`WalletKit Initialization Failure`);
