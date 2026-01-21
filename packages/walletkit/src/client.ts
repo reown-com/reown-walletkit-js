@@ -32,7 +32,7 @@ export class WalletKit extends IWalletKit {
     this.logger = this.core.logger;
     this.engine = new Engine(this);
     // initialized in initialize()
-    this.pay = {} as IWalletKitPay;
+    this.pay = undefined as unknown as IWalletKitPay;
   }
 
   // ---------- Events ----------------------------------------------- //
