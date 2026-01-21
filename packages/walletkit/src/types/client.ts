@@ -3,6 +3,7 @@ import { ICore, CoreTypes, SignClientTypes } from "@walletconnect/types";
 import { Logger } from "@walletconnect/logger";
 import { JsonRpcPayload } from "@walletconnect/jsonrpc-utils";
 import { IWalletKitEngine } from "./engine.js";
+import { IWalletKitPay, PayOptions } from "./pay.js";
 
 export declare namespace WalletKitTypes {
   type Event =
@@ -47,6 +48,7 @@ export declare namespace WalletKitTypes {
     metadata: Metadata;
     name?: string;
     signConfig?: SignConfig;
+    payConfig?: PayOptions;
   }
 
   type Metadata = CoreTypes.Metadata;
@@ -105,6 +107,7 @@ export abstract class IWalletKit {
   public abstract core: ICore;
   public abstract metadata: WalletKitTypes.Metadata;
   public abstract signConfig?: WalletKitTypes.SignConfig;
+  public abstract pay: IWalletKitPay;
 
   constructor(public opts: WalletKitTypes.Options) {}
 
