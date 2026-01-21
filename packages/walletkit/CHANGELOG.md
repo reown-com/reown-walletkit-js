@@ -1,5 +1,19 @@
 # @reown/walletkit
 
+## 1.5.0
+
+### Minor Changes
+
+- [#54](https://github.com/reown-com/reown-walletkit-js/pull/54) [`c2ee4bcc882e62e33419303df7b03e6b21a71996`](https://github.com/reown-com/reown-walletkit-js/commit/c2ee4bcc882e62e33419303df7b03e6b21a71996) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - Integrate WalletConnect Pay SDK
+
+  - Add `walletKit.pay` property exposing WalletConnectPay SDK methods:
+    - `getPaymentOptions()` - fetch available payment options
+    - `getRequiredPaymentActions()` - get wallet RPC calls to sign
+    - `confirmPayment()` - submit signatures and confirm payment
+  - Add `isPaymentLink()` utility function to detect payment URIs
+  - Add optional `payConfig` to WalletKit initialization options
+  - Auto-configure Pay SDK with `clientId` and `appId` from WalletKit core
+
 ## 1.4.1
 
 ### Patch Changes
