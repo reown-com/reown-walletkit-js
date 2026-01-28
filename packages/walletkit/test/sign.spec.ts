@@ -841,6 +841,162 @@ describe("Sign Integration", () => {
       await disconnect(wallet.core);
       await disconnect(dapp.core);
     });
+
+    it("should decrypt payload when using customStoragePrefix", async () => {
+      const initMetadata: CoreTypes.Metadata = {
+        name: "Test Dapp",
+        description: "Test Dapp Description",
+        url: "https://walletconnect.com",
+        icons: ["https://walletconnect.com/walletconnect-logo.png"],
+      };
+      const customPrefix = "custom-wallet-prefix";
+      const walletTable = "./test/tmp/wallet-custom-prefix";
+      const dappTable = "./test/tmp/dapp-custom-prefix";
+
+      const dapp = await SignClient.init({
+        ...TEST_CORE_OPTIONS,
+        name: "Dapp",
+        metadata: initMetadata,
+        storageOptions: { database: dappTable },
+      });
+
+      const wallet = await WalletKit.init({
+        core: new Core({
+          ...TEST_CORE_OPTIONS,
+          storageOptions: { database: walletTable },
+          customStoragePrefix: customPrefix,
+        }),
+        name: "wallet",
+        metadata: initMetadata,
+      });
+
+      const { uri: uriString = "", approval } = await dapp.connect({});
+
+      let session: SessionTypes.Struct = {} as any;
+      let encryptedMessage = "";
+      let decryptedMessage: JsonRpcPayload = {} as any;
+
+      await Promise.all([
+        new Promise<void>((resolve) => {
+          wallet.core.relayer.on(RELAYER_EVENTS.message, async (payload: any) => {
+            const { topic, message } = payload;
+            const decrypted: any = await wallet.core.crypto.decode(topic, message);
+            if (decrypted?.method === "wc_sessionPropose" && isJsonRpcRequest(decrypted)) {
+              encryptedMessage = message;
+              decryptedMessage = decrypted;
+              resolve();
+            }
+          });
+        }),
+        new Promise<void>((resolve) => {
+          wallet.on("session_proposal", async (sessionProposal) => {
+            const { id } = sessionProposal;
+            session = await wallet.approveSession({
+              id,
+              namespaces: TEST_NAMESPACES,
+            });
+            resolve();
+          });
+        }),
+        new Promise(async (resolve) => {
+          resolve(await approval());
+        }),
+        wallet.pair({ uri: uriString }),
+      ]);
+
+      // #when - decrypt with matching customStoragePrefix
+      const decrypted = await WalletKit.notifications.decryptMessage({
+        topic: session.pairingTopic,
+        encryptedMessage,
+        storageOptions: { database: walletTable },
+        customStoragePrefix: customPrefix,
+      });
+
+      // #then
+      expect(decrypted).to.be.exist;
+      expect(decrypted).to.be.a("object");
+      expect(decrypted).to.toMatchObject(decryptedMessage);
+
+      await disconnect(wallet.core);
+      await disconnect(dapp.core);
+    });
+
+    it("should fail to decrypt payload when customStoragePrefix is not provided but was used during init", async () => {
+      const initMetadata: CoreTypes.Metadata = {
+        name: "Test Dapp",
+        description: "Test Dapp Description",
+        url: "https://walletconnect.com",
+        icons: ["https://walletconnect.com/walletconnect-logo.png"],
+      };
+      const customPrefix = "custom-wallet-prefix-fail-test";
+      const walletTable = "./test/tmp/wallet-custom-prefix-fail";
+      const dappTable = "./test/tmp/dapp-custom-prefix-fail";
+
+      const dapp = await SignClient.init({
+        ...TEST_CORE_OPTIONS,
+        name: "Dapp",
+        metadata: initMetadata,
+        storageOptions: { database: dappTable },
+      });
+
+      const wallet = await WalletKit.init({
+        core: new Core({
+          ...TEST_CORE_OPTIONS,
+          storageOptions: { database: walletTable },
+          customStoragePrefix: customPrefix,
+        }),
+        name: "wallet",
+        metadata: initMetadata,
+      });
+
+      const { uri: uriString = "", approval } = await dapp.connect({});
+
+      let session: SessionTypes.Struct = {} as any;
+      let encryptedMessage = "";
+      let pairingTopic = "";
+
+      await Promise.all([
+        new Promise<void>((resolve) => {
+          wallet.core.relayer.on(RELAYER_EVENTS.message, async (payload: any) => {
+            const { topic, message } = payload;
+            const decrypted: any = await wallet.core.crypto.decode(topic, message);
+            if (decrypted?.method === "wc_sessionPropose" && isJsonRpcRequest(decrypted)) {
+              encryptedMessage = message;
+              pairingTopic = topic;
+              resolve();
+            }
+          });
+        }),
+        new Promise<void>((resolve) => {
+          wallet.on("session_proposal", async (sessionProposal) => {
+            const { id } = sessionProposal;
+            session = await wallet.approveSession({
+              id,
+              namespaces: TEST_NAMESPACES,
+            });
+            resolve();
+          });
+        }),
+        new Promise(async (resolve) => {
+          resolve(await approval());
+        }),
+        wallet.pair({ uri: uriString }),
+      ]);
+
+      // #when - try to decrypt WITHOUT customStoragePrefix (should fail)
+      const failedDecrypt = await WalletKit.notifications.decryptMessage({
+        topic: pairingTopic,
+        encryptedMessage,
+        storageOptions: { database: walletTable },
+        // customStoragePrefix is intentionally omitted
+      });
+
+      // #then - decryption should fail (returns undefined when keys not found)
+      expect(failedDecrypt).to.be.undefined;
+
+      await disconnect(wallet.core);
+      await disconnect(dapp.core);
+    });
   });
 
   describe("Sign 2.5", () => {
