@@ -8,6 +8,7 @@ export const Notifications: WalletKitTypes.INotifications = {
       core: new Core({
         storageOptions: params.storageOptions,
         storage: params.storage,
+        customStoragePrefix: params.customStoragePrefix,
       }),
     } as any;
     await instance.core.crypto.init();
@@ -20,6 +21,7 @@ export const Notifications: WalletKitTypes.INotifications = {
       core: new Core({
         storageOptions: params.storageOptions,
         storage: params.storage,
+        customStoragePrefix: params.customStoragePrefix,
       }),
       sessionStore: null,
     } as any;

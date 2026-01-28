@@ -59,11 +59,13 @@ export declare namespace WalletKitTypes {
       encryptedMessage: string;
       storageOptions?: CoreTypes.Options["storageOptions"];
       storage?: CoreTypes.Options["storage"];
+      customStoragePrefix?: CoreTypes.Options["customStoragePrefix"];
     }) => Promise<JsonRpcPayload>;
     getMetadata: (params: {
       topic: string;
       storageOptions?: CoreTypes.Options["storageOptions"];
       storage?: CoreTypes.Options["storage"];
+      customStoragePrefix?: CoreTypes.Options["customStoragePrefix"];
     }) => Promise<CoreTypes.Metadata>;
   }
 }
