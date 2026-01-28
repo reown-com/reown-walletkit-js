@@ -875,6 +875,7 @@ describe("Sign Integration", () => {
       let session: SessionTypes.Struct = {} as any;
       let encryptedMessage = "";
       let decryptedMessage: JsonRpcPayload = {} as any;
+      let pairingTopic = "";
 
       await Promise.all([
         new Promise<void>((resolve) => {
@@ -884,6 +885,7 @@ describe("Sign Integration", () => {
             if (decrypted?.method === "wc_sessionPropose" && isJsonRpcRequest(decrypted)) {
               encryptedMessage = message;
               decryptedMessage = decrypted;
+              pairingTopic = topic;
               resolve();
             }
           });
@@ -906,7 +908,7 @@ describe("Sign Integration", () => {
 
       // #when - decrypt with matching customStoragePrefix
       const decrypted = await WalletKit.notifications.decryptMessage({
-        topic: session.pairingTopic,
+        topic: pairingTopic,
         encryptedMessage,
         storageOptions: { database: walletTable },
         customStoragePrefix: customPrefix,
@@ -993,6 +995,71 @@ describe("Sign Integration", () => {
 
       // #then - decryption should fail (returns undefined when keys not found)
       expect(failedDecrypt).to.be.undefined;
+
+      await disconnect(wallet.core);
+      await disconnect(dapp.core);
+    });
+
+    it("should get session metadata when using customStoragePrefix", async () => {
+      const initMetadata: CoreTypes.Metadata = {
+        name: "Test Dapp",
+        description: "Test Dapp Description",
+        url: "https://walletconnect.com",
+        icons: ["https://walletconnect.com/walletconnect-logo.png"],
+      };
+      const customPrefix = "custom-wallet-prefix-metadata";
+      const walletTable = "./test/tmp/wallet-custom-prefix-metadata";
+      const dappTable = "./test/tmp/dapp-custom-prefix-metadata";
+
+      const dapp = await SignClient.init({
+        ...TEST_CORE_OPTIONS,
+        name: "Dapp",
+        metadata: initMetadata,
+        storageOptions: { database: dappTable },
+      });
+
+      const wallet = await WalletKit.init({
+        core: new Core({
+          ...TEST_CORE_OPTIONS,
+          storageOptions: { database: walletTable },
+          customStoragePrefix: customPrefix,
+        }),
+        name: "wallet",
+        metadata: initMetadata,
+      });
+
+      const { uri: uriString = "", approval } = await dapp.connect({});
+
+      let session: SessionTypes.Struct = {} as any;
+
+      await Promise.all([
+        new Promise<void>((resolve) => {
+          wallet.on("session_proposal", async (sessionProposal) => {
+            const { id } = sessionProposal;
+            session = await wallet.approveSession({
+              id,
+              namespaces: TEST_NAMESPACES,
+            });
+            resolve();
+          });
+        }),
+        new Promise(async (resolve) => {
+          resolve(await approval());
+        }),
+        wallet.pair({ uri: uriString }),
+      ]);
+
+      // #when - get metadata with matching customStoragePrefix
+      const metadata = await WalletKit.notifications.getMetadata({
+        topic: session.topic,
+        storageOptions: { database: walletTable },
+        customStoragePrefix: customPrefix,
+      });
+
+      // #then
+      expect(metadata).to.be.exist;
+      expect(metadata).to.be.a("object");
+      expect(metadata).to.toMatchObject(initMetadata);
 
       await disconnect(wallet.core);
       await disconnect(dapp.core);
