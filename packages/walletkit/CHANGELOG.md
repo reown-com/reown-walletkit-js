@@ -1,5 +1,11 @@
 # @reown/walletkit
 
+## 1.5.1
+
+### Patch Changes
+
+- [#56](https://github.com/reown-com/reown-walletkit-js/pull/56) [`23de0ff6874b4f35372ad74cd0cdc079b18cfeea`](https://github.com/reown-com/reown-walletkit-js/commit/23de0ff6874b4f35372ad74cd0cdc079b18cfeea) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - Fixed `notifications.decryptMessage` and `notifications.getMetadata` not working when using `customStoragePrefix` in Core options
+
 ## 1.5.0
 
 ### Minor Changes
