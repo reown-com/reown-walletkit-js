@@ -1,5 +1,13 @@
 # @reown/walletkit
 
+## 1.5.1
+
+### Patch Changes
+
+- [#56](https://github.com/reown-com/reown-walletkit-js/pull/56) [`23de0ff6874b4f35372ad74cd0cdc079b18cfeea`](https://github.com/reown-com/reown-walletkit-js/commit/23de0ff6874b4f35372ad74cd0cdc079b18cfeea) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - Fixed `notifications.decryptMessage` and `notifications.getMetadata` not working when using `customStoragePrefix` in Core options
+
+- [#59](https://github.com/reown-com/reown-walletkit-js/pull/59) [`caa04c6156b9825c433b0bb7da88cfb67fe08a59`](https://github.com/reown-com/reown-walletkit-js/commit/caa04c6156b9825c433b0bb7da88cfb67fe08a59) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - Update `@walletconnect/core`, `sign-client`, `types`, `utils` from 2.23.4 to 2.23.5 and `@walletconnect/pay` from 1.0.2 to 1.0.3. Pay SDK now includes WASM provider support, enabling pay functionality in browser/Node.js environments without requiring a React Native native module.
+
 ## 1.5.0
 
 ### Minor Changes
