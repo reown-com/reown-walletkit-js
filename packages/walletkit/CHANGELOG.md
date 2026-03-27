@@ -1,5 +1,11 @@
 # @reown/walletkit
 
+## 1.5.5
+
+### Patch Changes
+
+- [#66](https://github.com/reown-com/reown-walletkit-js/pull/66) [`8ed2466fe88d07f6faedf80137609c2064666948`](https://github.com/reown-com/reown-walletkit-js/commit/8ed2466fe88d07f6faedf80137609c2064666948) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - Update @walletconnect dependencies to latest versions (core, sign-client, types, utils to 2.23.9 and pay to 1.0.8)
+
 ## 1.5.4
 
 ### Patch Changes
