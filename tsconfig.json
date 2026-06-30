@@ -11,6 +11,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
+    "ignoreDeprecations": "6.0",
     "importHelpers": true,
     "lib": ["ES2020", "DOM"],
     "module": "ES2020",
