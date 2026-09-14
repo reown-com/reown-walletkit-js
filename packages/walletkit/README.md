@@ -156,13 +156,14 @@ const actions = await walletkit.pay.getRequiredPaymentActions({
 4. Confirming Payment
 
 ```javascript
-// Sign the required actions and collect signatures
-const signatures = await signActions(actions);
+// Sign the required actions and collect the results: plain strings (signatures,
+// tx hashes) or JSON objects for chains such as Tron ({ raw_data_hex, signature })
+const data = await signActions(actions);
 
 const result = await walletkit.pay.confirmPayment({
   paymentId: options.paymentId,
   optionId: options.options[0].id,
-  signatures,
+  data, // `signatures` is deprecated but still accepted as a fallback
 });
 
 // result.status - "succeeded" | "processing" | "failed" | "expired"
