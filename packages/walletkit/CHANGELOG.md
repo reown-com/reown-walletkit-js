@@ -1,5 +1,11 @@
 # @reown/walletkit
 
+## 1.6.0
+
+### Minor Changes
+
+- [#71](https://github.com/reown-com/reown-walletkit-js/pull/71) [`76ace2de7bc4ec6afcccf1f2d90b348bed3fdd1b`](https://github.com/reown-com/reown-walletkit-js/commit/76ace2de7bc4ec6afcccf1f2d90b348bed3fdd1b) Thanks [@jakubuid](https://github.com/jakubuid)! - Bump @walletconnect/pay to 1.1.0: `walletKit.pay.confirmPayment` now takes `data`, whose elements may be plain signature strings or JSON objects/arrays (e.g. TRON's `{raw_data_hex, signature}` confirm payload). `signatures` is deprecated and used as a fallback when `data` is omitted. Align @walletconnect/core, sign-client, types and utils to 2.25.0 (pay 1.1.0 pins utils 2.25.0) so a single @walletconnect version set ships.
+
 ## 1.5.6
 
 ### Patch Changes
