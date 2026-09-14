@@ -43,7 +43,7 @@
     "@walletconnect/jsonrpc-provider": "1.0.14",
     "@walletconnect/jsonrpc-utils": "1.0.8",
     "@walletconnect/logger": "3.0.2",
-    "@walletconnect/pay": "1.0.9",
+    "@walletconnect/pay": "1.1.0",
     "@walletconnect/sign-client": "2.23.10",
     "@walletconnect/types": "2.23.10",
     "@walletconnect/utils": "2.23.10"
