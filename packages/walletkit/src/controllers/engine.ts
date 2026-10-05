@@ -1,5 +1,6 @@
 import { SignClient } from "@walletconnect/sign-client";
 import { ISignClient, SessionTypes } from "@walletconnect/types";
+import { SDK_NAME, SDK_VERSION } from "../constants/index.js";
 import { IWalletKitEngine, WalletKitTypes } from "../types/index.js";
 
 export class Engine extends IWalletKitEngine {
@@ -17,9 +18,11 @@ export class Engine extends IWalletKitEngine {
       metadata: this.client.metadata,
       signConfig: this.client.signConfig,
     });
-    this.signClient.core.eventClient.init().catch((error) => {
-      this.client.logger.warn(error);
-    });
+    this.signClient.core.eventClient
+      .init({ sdk: { name: SDK_NAME, version: SDK_VERSION } })
+      .catch((error) => {
+        this.client.logger.warn(error);
+      });
   };
 
   public pair: IWalletKitEngine["pair"] = async (params) => {

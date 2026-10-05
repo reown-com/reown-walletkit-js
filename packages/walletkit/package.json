@@ -30,7 +30,7 @@
   "sideEffects": false,
   "scripts": {
     "clean": "rm -rf dist",
-    "build:pre": "npm run clean",
+    "build:pre": "npm run clean; ../../scripts/update_sdk_version.sh",
     "build:types": "tsc",
     "build:source": "rollup --config rollup.config.js",
     "build": "npm run lint; npm run build:pre; npm run build:source; npm run build:types",
