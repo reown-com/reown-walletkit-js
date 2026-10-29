@@ -1,7 +1,7 @@
 import { Core } from "@walletconnect/core";
 import { expect, describe, it, vi, afterEach } from "vitest";
 import { WalletKit, IWalletKit } from "../src";
-import { SDK_NAME, SDK_VERSION } from "../src/constants";
+import { SDK_VERSION } from "../src/constants";
 import { disconnect, TEST_CORE_OPTIONS } from "./shared";
 import { TEST_METADATA } from "./shared/values";
 import packageJson from "../package.json";
@@ -24,6 +24,8 @@ describe("Init", () => {
     });
     const initSpy = vi.spyOn(core.eventClient, "init");
     wallet = await WalletKit.init({ core, name: "wallet", metadata: TEST_METADATA });
-    expect(initSpy).toHaveBeenCalledWith({ sdk: { name: SDK_NAME, version: SDK_VERSION } });
+    expect(initSpy).toHaveBeenCalledWith({
+      sdk: { name: "walletkit", version: packageJson.version },
+    });
   });
 });
