@@ -37,7 +37,7 @@
     "npm-publish:next": "lerna exec --no-private -- npm publish --access public --tag next",
     "npm-publish:canary": "lerna exec --no-private -- npm publish --access public --tag canary",
     "changeset": "changeset",
-    "changeset:version": "changeset version; npm i",
+    "changeset:version": "changeset version; ./scripts/update_sdk_version.sh; npm i",
     "changeset:publish": "changeset publish"
   },
   "repository": {
