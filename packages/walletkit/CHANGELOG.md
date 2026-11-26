@@ -1,5 +1,11 @@
 # @reown/walletkit
 
+## 1.7.0
+
+### Minor Changes
+
+- [#74](https://github.com/reown-com/reown-walletkit-js/pull/74) [`2061ae97bbffce5f40e2b49bcea53c9cdba41a52`](https://github.com/reown-com/reown-walletkit-js/commit/2061ae97bbffce5f40e2b49bcea53c9cdba41a52) Thanks [@ignaciosantise](https://github.com/ignaciosantise)! - WalletKit now reports its own name and version (`sdk_name: "walletkit"`, `sdk_version`) in the core events `INIT` event, alongside the core version it already sent. Bumps `@walletconnect/*` to 2.26.1 and `@walletconnect/pay` to 1.1.2.
+
 ## 1.6.0
 
 ### Minor Changes
